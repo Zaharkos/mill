@@ -1,0 +1,23 @@
+Backlog:
+- Feature: Implement photo-based location detection
+- Feature: Develop encryption module
+- Feature: Develop decryption module
+- Task: Design UI for encryption/decryption
+- Task: Integrate map API for location visualization
+
+In Progress:
+- Task: Implement photo analysis algorithm
+- Task: Develop backend for encryption module
+- Task: Connect encryption module with UI
+
+In Test:
+...
+
+Done:
+- Task: Set up project repository
+
+Blocked:
+- Task: Trying to train AI model for detecting photos
+
+Fast Track/Defect:
+...
