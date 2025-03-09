@@ -1,41 +1,24 @@
-#include <cstdlib>
-#include <cstring>
-#include <string>
+#include "Engine.h"
 
-extern "C"
+Engine::Engine() :
+    m_randomEngine(std::random_device{}())
 {
-    void* encode(void* stringData, void* stringKey)
-    {
-        std::string result = "Str: " + std::string(static_cast<char*>(stringData)) + ", key: " + std::string(static_cast<char*>(stringKey));
+}
 
-        void* buffer = std::malloc(result.size() * sizeof(char));
-        std::memcpy(buffer, result.c_str(), result.size());
+std::string Engine::generateRandomKey()
+{
+    std::uniform_int_distribution<int> piDigitsDistribution(0, m_piDigits - 1);
+    std::uniform_int_distribution<int> infoDigits(0, m_maxInfoDigits - m_minInfoDigits);
+    std::uniform_int_distribution<int> infoShiftIndex(0, m_shifts.size() - 1);
+    std::uniform_int_distribution<int> infoShiftsBetweenQueriesIndex(0, m_shiftsBetweenQueries.size() - 1);
 
-        return buffer;
-    }
-
-    void* decode(void* encodedData, void* stringKey)
-    {
-        std::string result = "Encoded: " + std::string(static_cast<char*>(encodedData)) + ", key: " + std::string(static_cast<char*>(stringKey));
-
-        void* buffer = std::malloc(result.size() * sizeof(char));
-        std::memcpy(buffer, result.c_str(), result.size());
-
-        return buffer;
-    }
-
-    void* getRandomKey()
-    {
-        std::string result = "100:100";
-
-        void* buffer = std::malloc(result.size() * sizeof(char));
-        std::memcpy(buffer, result.c_str(), result.size());
-
-        return buffer;
-    }
-
-    void freeMemory(void* ptr)
-    {
-        std::free(ptr);
-    }
+    return (
+        std::to_string(piDigitsDistribution(m_randomEngine))
+        + ":" + std::to_string(piDigitsDistribution(m_randomEngine))
+        + ":" + std::to_string(infoDigits(m_randomEngine))
+        + ":" + std::to_string(infoDigits(m_randomEngine))
+        + ":" + std::to_string(infoShiftIndex(m_randomEngine))
+        + ":" + std::to_string(infoShiftIndex(m_randomEngine))
+        + ":" + std::to_string(infoShiftsBetweenQueriesIndex(m_randomEngine))
+    );
 }

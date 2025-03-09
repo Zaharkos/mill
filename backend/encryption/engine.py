@@ -1,50 +1,41 @@
+"""
+Python wrapper of encryption engine
+"""
+
 import ctypes
 
 class Engine:
+    """
+    Wraps encryption engine functional
+    """
+
     __engine = None
 
     def __init__(self):
-        if Engine.__engine is None:
-            Engine.__engine = ctypes.cdll.LoadLibrary("./backend/encryption/engine.so")
+        """
+        Creates encryption engine if it was not created yet
+        """
 
-            Engine.__engine.encode.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
-            Engine.__engine.encode.restype = ctypes.c_void_p
+        if Engine.__engine is not None:
+            return
 
-            Engine.__engine.decode.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
-            Engine.__engine.decode.restype = ctypes.c_void_p
+        Engine.__engine = ctypes.cdll.LoadLibrary("./backend/encryption/engine.so")
 
-            Engine.__engine.getRandomKey.argtypes = []
-            Engine.__engine.getRandomKey.restype = ctypes.c_void_p
+        Engine.__engine.generateRandomKey.argtypes = []
+        Engine.__engine.generateRandomKey.restype = ctypes.c_void_p
 
-            Engine.__engine.freeMemory.argtypes = [ctypes.c_void_p]
-            Engine.__engine.freeMemory.restype = None
+        Engine.__engine.freeMemory.argtypes = [ctypes.c_void_p]
+        Engine.__engine.freeMemory.restype = None
 
-    def encode(self, string_data, string_key):
-        result_ptr = Engine.__engine.encode(
-            ctypes.cast(ctypes.c_char_p(string_data.encode("utf-8")), ctypes.c_void_p),
-            ctypes.cast(ctypes.c_char_p(string_key.encode("utf-8")), ctypes.c_void_p)
-        )
+    def generate_random_key(self):
+        """
+        Generates random key for encryption/decryption
 
-        encoded_data = ctypes.cast(result_ptr, ctypes.c_char_p).value.decode("utf-8")
+        Returns:
+            str: key
+        """
 
-        Engine.__engine.freeMemory(result_ptr)
-
-        return encoded_data
-
-    def decode(self, string_encoded, string_key):
-        result_ptr = Engine.__engine.decode(
-            ctypes.cast(ctypes.c_char_p(string_encoded.encode("utf-8")), ctypes.c_void_p),
-            ctypes.cast(ctypes.c_char_p(string_key.encode("utf-8")), ctypes.c_void_p)
-        )
-
-        decoded_data = ctypes.cast(result_ptr, ctypes.c_char_p).value.decode("utf-8")
-
-        Engine.__engine.freeMemory(result_ptr)
-
-        return decoded_data
-
-    def get_random_key(self):
-        result_ptr = Engine.__engine.getRandomKey()
+        result_ptr = Engine.__engine.generateRandomKey()
 
         random_key = ctypes.cast(result_ptr, ctypes.c_char_p).value.decode("utf-8")
 
@@ -52,7 +43,8 @@ class Engine:
 
         return random_key
 
-key = Engine().get_random_key()
-print(f"Key: {key}")
-print(Engine().encode("qwerty", key))
-print(Engine().decode("qwerty", key))
+
+if __name__ == "__main__":
+    for i in range(5):
+        key = Engine().generate_random_key()
+        print(f"Key {i + 1}: {key}")

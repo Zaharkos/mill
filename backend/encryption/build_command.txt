@@ -1,2 +1,3 @@
-g++ -c -fPIC backend/encryption/engine/src/engine.cpp -O3 -o backend/encryption/engine/build/engine.o
-g++ -shared backend/encryption/engine/build/engine.o -o backend/encryption/engine.so
+g++ -c -fPIC backend/encryption/engine/src/Engine.cpp -Ibackend/encryption/engine/include -O3 -o backend/encryption/engine/build/engine.o
+g++ -c -fPIC backend/encryption/engine/src/interface.cpp -Ibackend/encryption/engine/include -O3 -o backend/encryption/engine/build/interface.o
+g++ -shared backend/encryption/engine/build/engine.o backend/encryption/engine/build/interface.o -o backend/encryption/engine.so
