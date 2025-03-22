@@ -9,12 +9,16 @@ In Progress:
 - Task: Implement photo analysis algorithm
 - Task: Develop backend for encryption module
 - Task: Connect encryption module with UI
+- Task: Develop frontend for all modules
 
 In Test:
 ...
 
 Done:
 - Task: Set up project repository
+- Task: Create basic web
+- Task: Developed basic encryption/decryption module
+
 
 Blocked:
 - Task: Trying to train AI model for detecting photos
