@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'geoguessr/css/main.css' %}">
+</head>
+<body>
+    <main class="login-container">
+        <div class="login-card">
+            <a href="main.html" class="back-arrow">←</a>
+            <h1 class="login-title">Welcome back!</h1>
+            <hr class="divider">
+            <form method="post" class="signup-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn-signup">Sign up</button>
+            </form>    
+            <a href="forgot-password.html" class="forgot-password">Forgot password?</a>
+        </div>
+    </main>
+</body>
+</html>

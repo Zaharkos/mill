@@ -16,7 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from geoguessr import views as geoguessr_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', geoguessr_views.main_page, name='main-page'),
+    path('registration', geoguessr_views.register_form, name='registration-page'),
+    path('login', geoguessr_views.login_form, name='login-page'),
+    path('logout', geoguessr_views.logout_view, name='logout'),
 ]
