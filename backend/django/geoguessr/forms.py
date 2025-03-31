@@ -1,3 +1,5 @@
+import re
+from django.core.exceptions import ValidationError
 from django import forms
 from .models import RecognitionRequest, Photo, User
 
@@ -43,6 +45,35 @@ class RegistrationForm(forms.ModelForm):
         widgets = {
             'email': forms.EmailInput(attrs={'id': 'email', 'placeholder': 'Enter email'}),
         }
+        help_texts = {
+            'username': None,
+        }
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("Імʼя користувача вже існує")
+        if not re.match(r'^\w+$', username):
+            raise ValidationError("Імʼя користувача може містити лише цифри, \
+літери та нижні підкреслення.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Ця адреса вже є зайнятою.")
+        return email
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if len(password) < 8:
+            raise ValidationError("Пароль має містити мінімум 8 символів")
+        if not any(char.isdigit() for char in password):
+            raise ValidationError("Пароль має містити хоча б 1 цифру")
+        if not any(char.isalpha() for char in password):
+            raise ValidationError("Пароль має містити хоча б 1 букву")
+        return password
+
 
 class LoginForm(forms.Form):
     username = forms.CharField()

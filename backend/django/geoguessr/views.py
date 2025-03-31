@@ -18,6 +18,8 @@ def register_form(request):
             user = form.save()
             login(request, user)
             return redirect('/')
+        else:
+            return render(request, "register.html", {"form": form})
     else:
         form = RegistrationForm()
         return render(request, 'register.html', {'form':form})
