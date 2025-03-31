@@ -1,0 +1,12 @@
+<nav class="nav">
+    <ul>
+        <li><a href="{% url 'main-page' %}">Home</a></li>
+        <li><a href="#">About</a></li>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+        {% else %}
+            <li><a href="{% url 'login-page' %}">Login</a></li>
+            <li><a href="{% url 'registration-page' %}">Register</a></li>
+        {% endif %}
+    </ul>
+</nav>

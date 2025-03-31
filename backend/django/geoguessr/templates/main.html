@@ -9,11 +9,7 @@
   <body>
     <header class="header">
       <div class="logo">LOGO</div>
-      <nav class="nav">
-        <a href="#">Home</a>
-        <a href="#">Features</a>
-        <a href="#">About</a>
-      </nav>
+      {% include 'menu.html' %}
     </header>
 
     <main>
@@ -27,8 +23,8 @@
             src="{% static 'geoguessr/images/logo.jpg' %}"
           />
           <div class="main-buttons">
-            <a href="login.html" class="btn btn-primary">Sign In</a>
-            <a href="register.html" class="btn btn-outline">Sign Up</a>
+            <a href="{% url 'login-page' %}" class="btn btn-primary">Sign In</a>
+            <a href="{% url 'registration-page' %}" class="btn btn-outline">Sign Up</a>
           </div>
         </div>
       </section>
