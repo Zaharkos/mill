@@ -1,40 +1,20 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>My Website</title>
-    <link rel="stylesheet" href="{% static 'geoguessr/css/main.css' %}"/>
-  </head>
-  <body>
-    <header class="header">
-      <div class="logo">LOGO</div>
-      {% include 'menu.html' %}
-    </header>
-
-    <main>
-      <section class="main">
-        <div class="main-content">
-          <h1 class="main-title">An innovative tool for searching locations on a map</h1>
-          <p class="main-subtitle">
-            Using photos and video data to significantly speed up the search
-          </p>
-          <img
-            src="{% static 'geoguessr/images/logo.jpg' %}"
-          />
-          <div class="main-buttons">
-            <a href="{% url 'login-page' %}" class="btn btn-primary">Sign In</a>
-            <a href="{% url 'registration-page' %}" class="btn btn-outline">Sign Up</a>
-          </div>
-        </div>
-      </section>
-    </main>
-    <form action="{% url 'logout' %}" method="post">
-      {% csrf_token %}
-      <button type="submit">Log Out</button>
-    </form>
-    <footer class="footer">
-      <p>© 2025 OSINT_Home. All rights reserved.</p>
-    </footer>
-  </body>
-</html>
+{% extends 'base.html' %}
+{% block body_content %}
+<main>
+  <section class="main">
+    <div class="main-content">
+      <h1 class="main-title">An innovative tool for searching locations on a map</h1>
+      <p class="main-subtitle">
+        Using photos and video data to significantly speed up the search
+      </p>
+      <img
+        src="{% static 'geoguessr/images/logo.jpg' %}"
+      />
+      <div class="main-buttons">
+        <a href="{% url 'login-page' %}" class="btn btn-primary">Sign In</a>
+        <a href="{% url 'registration-page' %}" class="btn btn-outline">Sign Up</a>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
