@@ -22,12 +22,12 @@ class RecognitionRequestAdmin(admin.ModelAdmin):
 
 @admin.register(Photo)
 class PhotoAdmin(admin.ModelAdmin):
-    list_display = ('id', 'request', 'uploaded_at')
+    list_display = ('id', 'recognition_request', 'uploaded_at')
     list_filter = ('uploaded_at',)
     search_fields = ('request__description',)
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'request', 'seeker', 'latitude', 'longitude', 'submitted_at')
+    list_display = ('id', 'recognition_request', 'seeker', 'latitude', 'longitude', 'submitted_at')
     list_filter = ('submitted_at',)
     search_fields = ('request__description', 'seeker__username')

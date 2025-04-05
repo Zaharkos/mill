@@ -1,0 +1,10 @@
+{% load static %}
+
+{% for req in recog_requests %}
+    <div>
+        {% for img in req.photos.all %}
+            <img src="{% static img.image %}">
+        {% endfor %}
+    </div>
+    <a href="{{ req.id }}">{{ req.title }}</a>
+{% endfor %}

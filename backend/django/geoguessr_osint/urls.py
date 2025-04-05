@@ -20,8 +20,35 @@ from geoguessr import views as geoguessr_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', geoguessr_views.main_page, name='main-page'),
-    path('registration', geoguessr_views.register_form, name='registration-page'),
-    path('login', geoguessr_views.login_form, name='login-page'),
-    path('logout', geoguessr_views.logout_view, name='logout'),
+    path('',
+         geoguessr_views.main_page,
+         name='main-page'),
+
+    path('registration',
+         geoguessr_views.register_form,
+         name='registration-page'),
+
+    path('login',
+         geoguessr_views.login_form,
+         name='login-page'),
+
+    path('logout',
+         geoguessr_views.logout_view,
+         name='logout'),
+
+    path('recognation-requests/create',
+         geoguessr_views.create_recognition_request,
+         name='recognation_request_create'),
+
+    path('recognation-requests/list',
+         geoguessr_views.show_recognition_requests,
+         name='recognation_request_list'),
+
+    path('recognation-requests/answer',
+         geoguessr_views.add_answer,
+         name='recognation_request_answer'),
+
+    path('recognation-requests/<str:pk>/',
+         geoguessr_views.get_recognition_request,
+         name='recognation_request'),
 ]

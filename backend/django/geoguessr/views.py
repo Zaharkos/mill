@@ -1,30 +1,62 @@
+"""Views for geoguessr project"""
+from django.forms import ValidationError
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from .models import RecognitionRequest
-from .forms import RegistrationForm, LoginForm
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 
+from .models import Photo, RecognitionRequest, User
+from .forms import (
+    AnswerForm,
+    RecognitionRequestForm,
+    RegistrationForm,
+    LoginForm,
+)
+
+
 def request_list(request):
+    """
+    Show a list of published recognition requests.
+
+    This view gets all posts that are published and shows them in a page.
+    """
     posts = RecognitionRequest.published.all()
     return render(request, '<NOTHING>', {'posts': posts})
 
+
 def main_page(request):
+    """
+    Show the main page.
+
+    This view returns the main page template.
+    """
     return render(request, 'main.html')
 
-def register_form(request):    
+
+def register_form(request):
+    """
+    Handle user registration.
+
+    This view shows a registration form and processes the form.
+    If the form is valid, it saves the new user and logs them in.
+    """
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('/')
-        else:
-            return render(request, "register.html", {"form": form})
-    else:
-        form = RegistrationForm()
-        return render(request, 'register.html', {'form':form})
+        return render(request, "register.html", {"form": form})
+    form = RegistrationForm()
+    return render(request, 'register.html', {'form': form})
+
 
 def login_form(request):
+    """
+    Handle user login.
+
+    This view shows a login form and processes the form.
+    If the form is valid, it checks the user and logs them in.
+    """
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -36,10 +68,99 @@ def login_form(request):
                     return HttpResponse('Authenticated successfully')
                 return HttpResponse('Disabled account')
             return HttpResponse('Invalid login')
-    else:
-        form = LoginForm()
+    form = LoginForm()
     return render(request, 'login.html', {'form': form})
 
+
 def logout_view(request):
+    """
+    Log out the user.
+
+    This view logs out the current user and redirects to the login page.
+    """
     logout(request)
     return redirect('login-page')
+
+
+def create_recognition_request(request):
+    """
+    Create a new recognition request.
+
+    This view handles the form to create a new recognition request.
+    If the user is not valid, it redirects to the login page.
+    When the form is valid, it saves the request and any photos.
+    """
+    if not isinstance(request.user, User):
+        return redirect('login-page')
+    if request.method == 'POST':
+        form = RecognitionRequestForm(request.POST)
+        if form.is_valid():
+            recognition_request = form.save(commit=False)
+            recognition_request.provider = request.user
+            recognition_request.save()
+
+            photos = request.FILES.getlist('photos')
+            for photo_file in photos:
+                Photo.objects.create(
+                    recognition_request=recognition_request,
+                    image=photo_file
+                )
+    else:
+        form = RecognitionRequestForm()
+    return render(request, 'test_forms_template.html', {'form': form})
+
+
+def show_recognition_requests(request):
+    """
+    Show all recognition requests.
+
+    This view gets all recognition requests and shows them in a list.
+    """
+    recognition_requests = RecognitionRequest.objects.all()
+    return render(
+        request,
+        'recognition_request_list.html',
+        {'recog_requests': recognition_requests}
+    )
+
+
+def add_answer(request):
+    """
+    Show the form to add an answer.
+
+    This view displays the template for adding an answer to a recognition request.
+    """
+    return render(request, 'add_recognition_answer.html')
+
+
+def get_recognition_request(request, pk):
+    """
+    Get a recognition request and add an answer.
+
+    This view retrieves a recognition request by its primary key.
+    If a POST request with a valid form is received, it saves the answer.
+    """
+    try:
+        recognition_request = get_object_or_404(RecognitionRequest, pk=pk)
+    except ValidationError:
+        return redirect('recognation_request_list')
+
+    if request.method == "POST":
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.seeker_id = request.user.id
+            answer.recognition_request = recognition_request
+            answer.save()
+            return render(
+                request,
+                'add_recognition_answer.html',
+                {'recog_arg': recognition_request, 'form': form}
+            )
+    else:
+        form = AnswerForm()
+    return render(
+        request,
+        'add_recognition_answer.html',
+        {'recog_arg': recognition_request, 'form': form}
+    )

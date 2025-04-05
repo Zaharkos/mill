@@ -10,6 +10,7 @@ In Progress:
 - Task: Develop backend for encryption module
 - Task: Connect encryption module with UI
 - Task: Develop frontend for all modules
+- Task: Add validation in forms
 
 In Test:
 ...
@@ -18,6 +19,9 @@ Done:
 - Task: Set up project repository
 - Task: Create basic web
 - Task: Developed basic encryption/decryption module
+- Task: Create registration system
+- Task: Implements authorization/authentication system
+- Task: Add JINJA templates
 
 
 Blocked:

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block body_content %}
+<main class="signup-container">
+  <div class="signup-card">
+    <a href="main.html" class="back-arrow">←</a>
+
+    <h1 class="signup-title">Sign up!</h1>
+    <hr class="divider" />
+
+    <form method="post" class="signup-form" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-signup">Sign up</button>
+    </form>
+
+    <p class="already-have-account">
+      Already have an account?
+      <a href="{% url 'login-page' %}">Login</a>
+    </p>
+  </div>
+</main>
+{% endblock %}
