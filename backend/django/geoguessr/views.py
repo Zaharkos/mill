@@ -3,6 +3,7 @@ from django.forms import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 from .models import Photo, RecognitionRequest, User
 from .forms import (
@@ -72,6 +73,7 @@ def login_form(request):
     return render(request, 'login.html', {'form': form})
 
 
+@login_required(login_url='login-page')
 def logout_view(request):
     """
     Log out the user.
@@ -82,6 +84,7 @@ def logout_view(request):
     return redirect('login-page')
 
 
+@login_required(login_url='login-page')
 def create_recognition_request(request):
     """
     Create a new recognition request.
@@ -110,6 +113,7 @@ def create_recognition_request(request):
     return render(request, 'test_forms_template.html', {'form': form})
 
 
+@login_required(login_url='login-page')
 def show_recognition_requests(request):
     """
     Show all recognition requests.
@@ -124,6 +128,7 @@ def show_recognition_requests(request):
     )
 
 
+@login_required(login_url='login-page')
 def add_answer(request):
     """
     Show the form to add an answer.
@@ -133,6 +138,7 @@ def add_answer(request):
     return render(request, 'add_recognition_answer.html')
 
 
+@login_required(login_url='login-page')
 def get_recognition_request(request, pk):
     """
     Get a recognition request and add an answer.
