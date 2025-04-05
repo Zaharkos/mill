@@ -1,4 +1,4 @@
-g++ -c -fPIC backend/encryption/engine/src/Treap.cpp -Ibackend/encryption/engine/include -O3 -o backend/encryption/engine/build/treap.o
+g++ -c -fPIC backend/encryption/engine/src/ReverseTreap.cpp -Ibackend/encryption/engine/include -O3 -o backend/encryption/engine/build/reverseTreap.o
 g++ -c -fPIC backend/encryption/engine/src/Engine.cpp -Ibackend/encryption/engine/include -O3 -o backend/encryption/engine/build/engine.o
 g++ -c -fPIC backend/encryption/engine/src/interface.cpp -Ibackend/encryption/engine/include -O3 -o backend/encryption/engine/build/interface.o
-g++ -shared backend/encryption/engine/build/treap.o backend/encryption/engine/build/engine.o backend/encryption/engine/build/interface.o -o backend/encryption/engine.so
+g++ -shared backend/encryption/engine/build/reverseTreap.o backend/encryption/engine/build/engine.o backend/encryption/engine/build/interface.o -o backend/encryption/engine.so
