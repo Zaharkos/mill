@@ -50,11 +50,11 @@ class Engine:
             universal_key.encode("utf-8")
         )
 
-        random_key = ctypes.cast(result_ptr, ctypes.c_char_p).value.decode("utf-8")
+        encoded_data = ctypes.cast(result_ptr, ctypes.c_char_p).value.decode("utf-8")
 
         Engine.__engine.freeMemory(result_ptr)
 
-        return random_key
+        return encoded_data
 
     def decode(self, string_data, universal_key):
         """
@@ -73,11 +73,11 @@ class Engine:
             universal_key.encode("utf-8")
         )
 
-        random_key = ctypes.cast(result_ptr, ctypes.c_char_p).value.decode("utf-8")
+        decoded_data = ctypes.cast(result_ptr, ctypes.c_char_p).value.decode("utf-8")
 
         Engine.__engine.freeMemory(result_ptr)
 
-        return random_key
+        return decoded_data
 
     def generate_random_key(self):
         """
@@ -95,12 +95,11 @@ class Engine:
 
         return random_key
 
-
 if __name__ == "__main__":
     key = Engine().generate_random_key()
     print(f"Key: {key}")
 
-    encoded = Engine().encode("qwerty", key)
+    encoded = Engine().encode("abcdefghijklmnopqrstuvwxyz", key)
     print(f"Encoded: {encoded}")
 
     decoded = Engine().decode(encoded, key)

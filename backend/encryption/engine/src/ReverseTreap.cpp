@@ -213,7 +213,7 @@ void ReverseTreap<blockSize>::reverseRange(int l, int r)
 template <size_t blockSize>
 std::vector<typename ReverseTreap<blockSize>::DataBlock> ReverseTreap<blockSize>::getData()
 {
-	std::vector<ReverseTreap<blockSize>::DataBlock> data{};
+	std::vector<DataBlock> data{};
 
 	this->getDataFromNodes(m_root, data);
 
@@ -237,8 +237,8 @@ void ReverseTreap<blockSize>::getDataFromNodes(ReverseTreap::Node* node, std::ve
 	this->getDataFromNodes(node->right, data);
 }
 
-template class ReverseTreap<1>; // 1 bit - to secure small amount of crucial data
 template class ReverseTreap<8>; // 1 byte
 template class ReverseTreap<64>; // 8 bytes
-template class ReverseTreap<512>; // 64 bytes - for photos
-template class ReverseTreap<4096>; // 512 bytes - for videos
+template class ReverseTreap<512>; // 64 bytes
+template class ReverseTreap<4096>; // 512 bytes
+template class ReverseTreap<32768>; // 4 kilobytes
