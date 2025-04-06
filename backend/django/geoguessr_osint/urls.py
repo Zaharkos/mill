@@ -36,6 +36,10 @@ urlpatterns = [
          geoguessr_views.logout_view,
          name='logout'),
 
+    path('account',
+         geoguessr_views.user_account,
+         name='account'),
+
     path('recognation-requests/create',
          geoguessr_views.create_recognition_request,
          name='recognation_request_create'),

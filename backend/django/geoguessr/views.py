@@ -170,3 +170,13 @@ def get_recognition_request(request, pk):
         'add_recognition_answer.html',
         {'recog_arg': recognition_request, 'form': form}
     )
+
+
+@login_required(login_url='login-page')
+def user_account(request):
+    user = request.user
+    recognition_requests = RecognitionRequest.objects.filter(provider=user)
+    context = {
+        'recognition_requests': recognition_requests,
+    }
+    return render(request, 'test_account_page.html', context)

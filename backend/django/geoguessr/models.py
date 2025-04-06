@@ -58,7 +58,7 @@ class RecognitionRequest(models.Model):
     provider = models.ForeignKey(User, on_delete=models.CASCADE, related_name="requests")
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True)
-    estimated_date = models.DateField(null=True, blank=True)
+    estimated_date = models.CharField(max_length=25, null=True)
     estimated_location = models.CharField(max_length=255, blank=True)
     is_visible = models.BooleanField(default=True)
 
@@ -83,7 +83,7 @@ class Photo(models.Model):
         on_delete=models.CASCADE,
         related_name="photos"
     )
-    image = models.ImageField(upload_to="static/geoguessr/photos")
+    image = models.ImageField(upload_to="geoguessr/photos")
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
