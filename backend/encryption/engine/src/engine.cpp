@@ -26,18 +26,26 @@ std::string Engine::encode(std::string stringData, const std::string& key)
     }
     if (stringData.size() < (1 << 20)) // <= 1 MB
     {
-        return this->encode_with_block_size<64>(stringData + std::string(8 - stringData.size() % 8, '0'), keyData, false);
+        return this->encode_with_block_size<64>(stringData + std::string(
+            stringData.size() % 8 ? 8 - stringData.size() % 8 : 0, '0'
+        ), keyData, false);
     }
     if (stringData.size() < (1 << 23)) // <= 8 MB
     {
-        return this->encode_with_block_size<512>(stringData + std::string(64 - stringData.size() % 64, '0'), keyData, false);
+        return this->encode_with_block_size<512>(stringData + std::string(
+            stringData.size() % 64 ? 64 - stringData.size() % 64 : 0, '0'
+        ), keyData, false);
     }
     if (stringData.size() < (1 << 26)) // <= 64 MB
     {
-        return this->encode_with_block_size<4096>(stringData + std::string(512 - stringData.size() % 512, '0'), keyData, false);
+        return this->encode_with_block_size<4096>(stringData + std::string(
+            stringData.size() % 512 ? 512 - stringData.size() % 512 : 0, '0'
+        ), keyData, false);
     }
 
-    return this->encode_with_block_size<32768>(stringData + std::string(4096 - stringData.size() % 4096, '0'), keyData, false);
+    return this->encode_with_block_size<32768>(stringData + std::string(
+        stringData.size() % 4096 ? 4096 - stringData.size() % 4096 : 0, '0'
+    ), keyData, false);
 }
 
 std::string Engine::decode(const std::string& encodedData, const std::string& key)
@@ -82,18 +90,18 @@ std::uint64_t Engine::predictEncodedSize(std::uint64_t dataSize)
     }
     if (dataSize < (1 << 20)) // <= 1 MB
     {
-        return std::ceil((double)dataSize / 8);
+        return std::ceil((double)dataSize / 8) * 8;
     }
     if (dataSize < (1 << 23)) // <= 8 MB
     {
-        return std::ceil((double)dataSize / 64);
+        return std::ceil((double)dataSize / 64) * 64;
     }
     if (dataSize < (1 << 26)) // <= 64 MB
     {
-        return std::ceil((double)dataSize / 512);
+        return std::ceil((double)dataSize / 512) * 512;
     }
 
-    return std::ceil((double)dataSize / 4096);
+    return std::ceil((double)dataSize / 4096) * 4096;
 }
 
 std::string Engine::generateRandomKey()
