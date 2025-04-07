@@ -72,6 +72,30 @@ std::string Engine::decode(const std::string& encodedData, const std::string& ke
     return res.substr(m_maxSizeDigits, resSize);
 }
 
+std::uint64_t Engine::predictEncodedSize(std::uint64_t dataSize)
+{
+    dataSize += m_maxSizeDigits;
+
+    if (dataSize < (1 << 17)) // <= 128 KB
+    {
+        return dataSize;
+    }
+    if (dataSize < (1 << 20)) // <= 1 MB
+    {
+        return std::ceil((double)dataSize / 8);
+    }
+    if (dataSize < (1 << 23)) // <= 8 MB
+    {
+        return std::ceil((double)dataSize / 64);
+    }
+    if (dataSize < (1 << 26)) // <= 64 MB
+    {
+        return std::ceil((double)dataSize / 512);
+    }
+
+    return std::ceil((double)dataSize / 4096);
+}
+
 std::string Engine::generateRandomKey()
 {
     std::uniform_int_distribution<int> piDigitsDistribution(0, m_piDigits.size() - 1);
@@ -88,6 +112,11 @@ std::string Engine::generateRandomKey()
         + ":" + std::to_string(infoShiftIndex(m_randomEngine))
         + ":" + std::to_string(infoShiftsBetweenQueriesIndex(m_randomEngine))
     );
+}
+
+std::uint64_t Engine::getMaxKeySize()
+{
+    return m_maxKeySize;
 }
 
 Engine::KeyData Engine::keyToData(std::string key)

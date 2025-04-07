@@ -4,6 +4,7 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 class Engine
 {
@@ -13,7 +14,11 @@ public:
     std::string encode(std::string stringData, const std::string& key);
     std::string decode(const std::string& encodedData, const std::string& key);
 
+    std::uint64_t predictEncodedSize(std::uint64_t dataSize);
+
     std::string generateRandomKey();
+
+    std::uint64_t getMaxKeySize();
 
 private:
     struct KeyData
@@ -33,6 +38,8 @@ private:
     std::string encode_with_block_size(const std::string& stringData, const KeyData& keyData, bool decode);
 
     std::mt19937_64 m_randomEngine;
+    
+    std::uint64_t m_maxKeySize = 25; // maximum size of key
 
     int m_maxSizeDigits = 15; // digits used to store original message size in encoded message
 
@@ -47,7 +54,7 @@ private:
     // odd numbers to balance queries
     std::vector<int> m_shiftsBetweenQueries{ 11, 13, 15, 17, 19, 21, 23, 25, 27, 29 };
 
-    std::string m_piDigits{}; // pi digits obtained from server
+    std::string m_piDigits{}; // pi digits obtained from server (10 millions)
 };
 
 #endif
