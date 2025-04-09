@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from verify_email.email_handler import ActivationMailManager
+
 
 from .models import Photo, RecognitionRequest, User
 from .forms import (
@@ -43,8 +45,12 @@ def register_form(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
+            # user = ActivationMailManager.send_verification_link(request, form)
+            user = form.save(commit=False)
+            raw_password = form.cleaned_data.get("password")
+            user.set_password(raw_password)
+            user.role = 'seeker'
+            user.save()
             return redirect('/')
         return render(request, "register.html", {"form": form})
     form = RegistrationForm()
@@ -62,7 +68,7 @@ def login_form(request):
         form = LoginForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            user = authenticate(username=cd['username'], password=cd['password'])
+            user = authenticate(request, username=cd['username'], password=cd['password'])
             if user is not None:
                 if user.is_active:
                     login(request, user)
@@ -110,7 +116,7 @@ def create_recognition_request(request):
                 )
     else:
         form = RecognitionRequestForm()
-    return render(request, 'test_forms_template.html', {'form': form})
+    return render(request, 'create-request.html', {'form': form})
 
 
 @login_required(login_url='login-page')
@@ -129,16 +135,6 @@ def show_recognition_requests(request):
 
 
 @login_required(login_url='login-page')
-def add_answer(request):
-    """
-    Show the form to add an answer.
-
-    This view displays the template for adding an answer to a recognition request.
-    """
-    return render(request, 'add_recognition_answer.html')
-
-
-@login_required(login_url='login-page')
 def get_recognition_request(request, pk):
     """
     Get a recognition request and add an answer.
@@ -154,20 +150,21 @@ def get_recognition_request(request, pk):
     if request.method == "POST":
         form = AnswerForm(request.POST)
         if form.is_valid():
+            print(form.cleaned_data())
             answer = form.save(commit=False)
             answer.seeker_id = request.user.id
             answer.recognition_request = recognition_request
             answer.save()
             return render(
                 request,
-                'add_recognition_answer.html',
+                'location-details.html',
                 {'recog_arg': recognition_request, 'form': form}
             )
     else:
         form = AnswerForm()
     return render(
         request,
-        'add_recognition_answer.html',
+        'location-details.html',
         {'recog_arg': recognition_request, 'form': form}
     )
 
@@ -179,4 +176,4 @@ def user_account(request):
     context = {
         'recognition_requests': recognition_requests,
     }
-    return render(request, 'test_account_page.html', context)
+    return render(request, 'profile.html', context)

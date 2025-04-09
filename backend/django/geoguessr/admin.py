@@ -4,14 +4,7 @@ from .models import User, RecognitionRequest, Photo, Answer
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name', 'email', 'role', 'is_verified', 'is_active', 'last_active')
-
-    fieldsets = BaseUserAdmin.fieldsets + (
-        (None, {'fields': ('role', 'is_verified')}),
-    )
-    add_fieldsets = BaseUserAdmin.add_fieldsets + (
-        (None, {'fields': ('role', 'is_verified')}),
-    )
+    list_display = ('username', 'email', 'first_name', 'last_name', 'email', 'role', 'is_active', 'last_active')
     search_fields = ('username', 'email', 'role')
 
 @admin.register(RecognitionRequest)

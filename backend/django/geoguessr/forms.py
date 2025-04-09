@@ -147,6 +147,7 @@ class AnswerForm(forms.ModelForm):
         model = Answer
         fields = ['latitude', 'longitude']
         widgets = {
-            'latitude': forms.TextInput(attrs={'id': 'lat', 'step': 'any'}),
-            'longitude': forms.TextInput(attrs={'id': 'lng', 'step': 'any'}),
+            'latitude': forms.TextInput(widget = forms.HiddenInput(), attrs={'id': 'lat', 'step': 'any'}),
+            'longitude': forms.TextInput(widget = forms.HiddenInput(), attrs={'id': 'lng', 'step': 'any'}),
         }
+        hidden = ['latitude', 'longitude']

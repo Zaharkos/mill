@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Profile</title>
+  <style>
+    :root {
+      --bg-color: #111;
+      --text-color: #fff;
+      --accent-color: #5f9ea0;
+      --secondary-bg: #2e2e2e;
+      --sidebar-width: 250px;
+      --header-height: 70px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #000;
+      padding: 0 2rem;
+      z-index: 1000;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .nav a {
+      color: var(--text-color);
+      text-decoration: none;
+      margin-left: 1rem;
+      font-weight: 400;
+      transition: color 0.3s;
+    }
+    .nav a:hover {
+      color: var(--accent-color);
+    }
+
+    .footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #000;
+      color: #888;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      width: var(--sidebar-width);
+      height: 100%;
+      background-color: var(--secondary-bg);
+      padding: 1rem;
+      overflow-y: auto;
+      border-right: 1px solid #333;
+    }
+    .sidebar-menu {
+      list-style: none;
+      margin-bottom: 2rem;
+    }
+    .sidebar-menu li {
+      margin-bottom: 1rem;
+    }
+    .sidebar-menu a {
+      text-decoration: none;
+      color: #ccc;
+      transition: color 0.3s;
+    }
+    .sidebar-menu a:hover {
+      color: var(--accent-color);
+    }
+    .btn-promote {
+      width: 100%;
+      background-color: var(--accent-color);
+      color: var(--text-color);
+      padding: 0.8rem;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    .btn-promote:hover {
+      background-color: #4d8282;
+    }
+
+    .profile-main {
+      margin-left: calc(var(--sidebar-width) + 1rem);
+      padding: calc(var(--header-height) + 1rem) 2rem 2rem; 
+
+    }
+    .profile-section {
+      background-color: #1a1a1a;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+    .profile-section h2 {
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+      color: var(--accent-color);
+      font-weight: 600;
+      border-bottom: 1px solid #444;
+      padding-bottom: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+      color: #ccc;
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      background-color: #2e2e2e;
+      border: 1px solid var(--accent-color);
+      border-radius: 4px;
+      color: var(--text-color);
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #4d8282;
+    }
+
+    .btn {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      background-color: var(--accent-color);
+      color: var(--text-color);
+      margin-top: 0.5rem;
+    }
+    .btn:hover {
+      background-color: #4d8282;
+    }
+    .btn-outline {
+      background-color: transparent;
+      border: 2px solid var(--accent-color);
+      color: var(--accent-color);
+      margin-top: 1rem;
+    }
+    .btn-outline:hover {
+      background-color: var(--accent-color);
+      color: #fff;
+    }
+
+    .promote-section h2 {
+      color: var(--accent-color);
+      margin-bottom: 0.5rem;
+    }
+    .promote-section p {
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+  </style>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <header class="header">
+    <div class="logo">LOGO</div>
+    <nav class="nav">
+      <a href="main.html">Home</a>
+      <a href="profile.html">Profile</a>
+      <a href="#">Logout</a>
+    </nav>
+  </header>
+0`
+  <aside class="sidebar">
+    <ul class="sidebar-menu">
+      <li><a href="#">Change username</a></li>
+      <li><a href="#">Change password</a></li>
+      <li><a href="#">Change e-mail</a></li>
+      <li><a href="#">All of your answers</a></li>
+      <li><a href="#">All of requests</a></li>
+    </ul>
+    <button class="btn-promote">Promote to military</button>
+  </aside>
+
+  <main class="profile-main">
+    <div class="profile-section">
+      <h2>Change Username</h2>
+      <div class="form-group">
+        <label for="current-username">Current Username</label>
+        <input type="text" id="current-username" class="form-control" disabled value="CurrentUsername">
+      </div>
+      <div class="form-group">
+        <label for="new-username">New Username</label>
+        <input type="text" id="new-username" class="form-control">
+      </div>
+      <button class="btn">Update Username</button>
+    </div>
+
+    <div class="profile-section">
+      <h2>Change Password</h2>
+      <div class="form-group">
+        <label for="current-password">Current Password</label>
+        <input type="password" id="current-password" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="new-password">New Password</label>
+        <input type="password" id="new-password" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="confirm-password">Confirm New Password</label>
+        <input type="password" id="confirm-password" class="form-control">
+      </div>
+      <button class="btn">Update Password</button>
+    </div>
+
+    <div class="profile-section">
+      <h2>Change Email</h2>
+      <div class="form-group">
+        <label for="current-email">Current Email</label>
+        <input type="email" id="current-email" class="form-control" disabled value="user@example.com">
+      </div>
+      <div class="form-group">
+        <label for="new-email">New Email</label>
+        <input type="email" id="new-email" class="form-control">
+      </div>
+      <button class="btn">Update Email</button>
+    </div>
+
+    <div class="profile-section promote-section">
+      <h2>Promote to Military</h2>
+      <p>Request elevated access for military personnel.</p>
+      <button class="btn btn-outline">Request Military Status</button>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 Location Finder. All rights reserved.</p>
+  </footer>
+</body>
+</html>
+

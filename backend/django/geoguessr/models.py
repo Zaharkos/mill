@@ -54,7 +54,7 @@ class RecognitionRequest(models.Model):
     This model stores data about a request made by a provider user.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=50, default='None')
+    title = models.CharField(max_length=50, unique=True)
     provider = models.ForeignKey(User, on_delete=models.CASCADE, related_name="requests")
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True)

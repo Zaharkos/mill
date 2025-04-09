@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from geoguessr import views as geoguessr_views
 
 urlpatterns = [
@@ -55,4 +55,6 @@ urlpatterns = [
     path('recognation-requests/<str:pk>/',
          geoguessr_views.get_recognition_request,
          name='recognation_request'),
+
+     path('verification/', include('verify_email.urls')),
 ]
