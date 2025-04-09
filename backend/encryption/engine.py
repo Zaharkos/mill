@@ -21,63 +21,63 @@ class Engine:
 
         Engine.__engine = ctypes.cdll.LoadLibrary("./backend/encryption/engine.so")
 
-        Engine.__engine.encode.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
-        Engine.__engine.encode.restype = ctypes.c_void_p
+        Engine.__engine.encode.argtypes = [ctypes.c_char_p, ctypes.c_uint64, ctypes.c_char_p, ctypes.c_char_p]
+        Engine.__engine.encode.restype = ctypes.c_uint64
 
-        Engine.__engine.decode.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
-        Engine.__engine.decode.restype = ctypes.c_void_p
+        Engine.__engine.decode.argtypes = [ctypes.c_char_p, ctypes.c_uint64, ctypes.c_char_p, ctypes.c_char_p]
+        Engine.__engine.decode.restype = ctypes.c_uint64
 
-        Engine.__engine.generateRandomKey.argtypes = []
-        Engine.__engine.generateRandomKey.restype = ctypes.c_void_p
+        Engine.__engine.generateRandomKey.argtypes = [ctypes.c_char_p]
+        Engine.__engine.generateRandomKey.restype = ctypes.c_uint64
 
-        Engine.__engine.freeMemory.argtypes = [ctypes.c_void_p]
-        Engine.__engine.freeMemory.restype = None
+        Engine.__engine.predictEncodedSize.argtypes = [ctypes.c_uint64]
+        Engine.__engine.predictEncodedSize.restype = ctypes.c_uint64
 
-    def encode(self, string_data, universal_key):
+    def encode(self, byte_data, universal_key):
         """
         Encodes given data by key
 
         Args:
-            string_data (str): data to encode
+            byte_data (bytes): data to encode
             universal_key (str): encode/decode key
 
         Returns:
             str: encoded data
         """
 
-        result_ptr = Engine.__engine.encode(
-            string_data.encode("utf-8"),
-            universal_key.encode("utf-8")
+        res_buffer = ctypes.create_string_buffer(Engine.__engine.predictEncodedSize(len(byte_data)))
+
+        encoded_data_size = Engine.__engine.encode(
+            byte_data,
+            len(byte_data),
+            universal_key,
+            res_buffer
         )
 
-        random_key = ctypes.cast(result_ptr, ctypes.c_char_p).value.decode("utf-8")
+        return res_buffer.raw[:encoded_data_size]
 
-        Engine.__engine.freeMemory(result_ptr)
-
-        return random_key
-
-    def decode(self, string_data, universal_key):
+    def decode(self, byte_data, universal_key):
         """
         Decodes given data by key
 
         Args:
-            string_data (str): data to encode
+            byte_data (bytes): data to encode
             universal_key (str): encode/decode key
 
         Returns:
             str: encoded data
         """
 
-        result_ptr = Engine.__engine.decode(
-            string_data.encode("utf-8"),
-            universal_key.encode("utf-8")
+        res_buffer = ctypes.create_string_buffer(len(byte_data))
+
+        decoded_data_size = Engine.__engine.decode(
+            byte_data,
+            len(byte_data),
+            universal_key,
+            res_buffer
         )
 
-        random_key = ctypes.cast(result_ptr, ctypes.c_char_p).value.decode("utf-8")
-
-        Engine.__engine.freeMemory(result_ptr)
-
-        return random_key
+        return res_buffer[:decoded_data_size]
 
     def generate_random_key(self):
         """
@@ -87,21 +87,20 @@ class Engine:
             str: key
         """
 
-        result_ptr = Engine.__engine.generateRandomKey()
+        res_buffer = ctypes.create_string_buffer(Engine.__engine.getMaxKeySize())
 
-        random_key = ctypes.cast(result_ptr, ctypes.c_char_p).value.decode("utf-8")
+        key_real_size = Engine.__engine.generateRandomKey(res_buffer)
 
-        Engine.__engine.freeMemory(result_ptr)
-
-        return random_key
-
+        return res_buffer.raw[:key_real_size]
 
 if __name__ == "__main__":
     key = Engine().generate_random_key()
-    print(f"Key: {key}")
 
-    encoded = Engine().encode("qwerty", key)
-    print(f"Encoded: {encoded}")
+    with open("backend/encryption/data/test_img.jpg", "rb") as img:
+        raw_data = img.read()
 
-    decoded = Engine().decode(encoded, key)
-    print(f"Decoded: {decoded}")
+        encoded = Engine().encode(raw_data, key)
+
+        decoded = Engine().decode(encoded, key)
+
+        print(raw_data == decoded)

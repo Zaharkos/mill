@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include <cstring>
-#include <string>
 
 #include "Engine.h"
 
@@ -8,38 +7,44 @@ Engine engine{};
 
 extern "C"
 {
-    void* encode(const char* stringData, const char* key)
+    std::uint64_t encode(const char* stringDataBuffer, size_t stringDataSize, const char* key, char* resBuf)
     {
+        std::string stringData(stringDataBuffer, stringDataBuffer + stringDataSize);
+
         std::string result = engine.encode(stringData, key);
 
-        void* buffer = std::malloc((result.size() + 1) * sizeof(char));
-        std::strcpy(static_cast<char*>(buffer), result.c_str());
+        std::memcpy(resBuf, result.c_str(), result.size());
 
-        return buffer;
+        return result.size();
     }
 
-    void* decode(const char* encodedData, const char* key)
+    std::uint64_t decode(const char* encodedDataBuffer, size_t encodedDataSize, const char* key, char* resBuf)
     {
+        std::string encodedData(encodedDataBuffer, encodedDataBuffer + encodedDataSize);
+
         std::string result = engine.decode(encodedData, key);
 
-        void* buffer = std::malloc((result.size() + 1) * sizeof(char));
-        std::strcpy(static_cast<char*>(buffer), result.c_str());
+        std::memcpy(resBuf, result.c_str(), result.size());
 
-        return buffer;
+        return result.size();
     }
 
-    void* generateRandomKey()
+    std::uint64_t generateRandomKey(char* resBuf)
     {
         std::string result = engine.generateRandomKey();
 
-        void* buffer = std::malloc((result.size() + 1) * sizeof(char));
-        std::strcpy(static_cast<char*>(buffer), result.c_str());
+        std::memcpy(resBuf, result.c_str(), result.size());
 
-        return buffer;
+        return result.size();
     }
 
-    void freeMemory(void* ptr)
+    std::uint64_t getMaxKeySize()
     {
-        std::free(ptr);
+        return engine.getMaxKeySize();
+    }
+
+    std::uint64_t predictEncodedSize(std::uint64_t dataSize)
+    {
+        return engine.predictEncodedSize(dataSize);
     }
 }
