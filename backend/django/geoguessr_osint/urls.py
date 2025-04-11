@@ -48,13 +48,13 @@ urlpatterns = [
          geoguessr_views.show_recognition_requests,
          name='recognation_request_list'),
 
-    path('recognation-requests/answer',
-         geoguessr_views.add_answer,
-         name='recognation_request_answer'),
-
     path('recognation-requests/<str:pk>/',
          geoguessr_views.get_recognition_request,
          name='recognation_request'),
+
+     path('user/promote',
+          geoguessr_views.military_promote,
+          name='request-promote'),
 
      path('verification/', include('verify_email.urls')),
 ]

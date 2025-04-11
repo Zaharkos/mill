@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from verify_email.email_handler import ActivationMailManager
 
 
-from .models import Photo, RecognitionRequest, User
+from .models import MilitaryPromote, Photo, RecognitionRequest, User
 from .forms import (
     AnswerForm,
     RecognitionRequestForm,
@@ -32,6 +32,8 @@ def main_page(request):
 
     This view returns the main page template.
     """
+    if request.user.is_authenticated:
+        return redirect('recognation_request_list')
     return render(request, 'main.html')
 
 
@@ -64,6 +66,9 @@ def login_form(request):
     This view shows a login form and processes the form.
     If the form is valid, it checks the user and logs them in.
     """
+    if request.user.is_authenticated:
+        return redirect('account')
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -150,7 +155,6 @@ def get_recognition_request(request, pk):
     if request.method == "POST":
         form = AnswerForm(request.POST)
         if form.is_valid():
-            print(form.cleaned_data())
             answer = form.save(commit=False)
             answer.seeker_id = request.user.id
             answer.recognition_request = recognition_request
@@ -177,3 +181,13 @@ def user_account(request):
         'recognition_requests': recognition_requests,
     }
     return render(request, 'profile.html', context)
+
+
+@login_required(login_url='login-page')
+def military_promote(request):
+    user = request.user
+    is_request = bool(MilitaryPromote.objects.filter(seeker=user))
+    if user.has_role('provider') or is_request:
+        return redirect('account')
+    MilitaryPromote.objects.create(seeker=user)
+    return redirect('account')

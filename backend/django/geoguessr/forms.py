@@ -78,6 +78,7 @@ class RegistrationForm(forms.ModelForm):
         fields = ['username', 'first_name', 'last_name', 'email', 'password']
         widgets = {
             'email': forms.EmailInput(attrs={'id': 'email', 'placeholder': 'Enter email'}),
+            'password': forms.PasswordInput(attrs={'id': 'password', 'placeholder': 'Enter password'})
         }
         help_texts = {
             'username': None,
@@ -147,7 +148,7 @@ class AnswerForm(forms.ModelForm):
         model = Answer
         fields = ['latitude', 'longitude']
         widgets = {
-            'latitude': forms.TextInput(widget = forms.HiddenInput(), attrs={'id': 'lat', 'step': 'any'}),
-            'longitude': forms.TextInput(widget = forms.HiddenInput(), attrs={'id': 'lng', 'step': 'any'}),
+            'latitude': forms.HiddenInput(attrs={'id': 'lat', 'step': 'any'}),
+            'longitude': forms.HiddenInput(attrs={'id': 'lng', 'step': 'any'}),
         }
         hidden = ['latitude', 'longitude']

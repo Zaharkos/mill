@@ -154,27 +154,56 @@
       <aside class="sidebar">
         <ul class="sidebar-menu">
           <li><a href="profile_settings.html">Profile Settings</a></li>
-          <li><a href="#">Request 1</a></li>
-          <li><a href="#">Request 2</a></li>
-          <li><a href="#">Request 3</a></li>
-          <li><a href="#">Request 4</a></li>
-          <li><a href="#">Request 5</a></li>
-          <li><a href="#">Request 6</a></li>
+          {% for req in recognition_requests %}
+            <li><a href="#">{{ req.title }}</a></li>
+          {% endfor %}
         </ul>
-        <button class="btn btn-promote">Promote</button>
+        <a class="btn btn-promote" href="{% url 'request-promote' %}">Promote</a>
       </aside>
       <section class="profile-main">
-        <h2>Your Requests</h2>
-        <ul>
-          <li><a href="location-details.html">Request 1</a></li>
-          <li><a href="location-details.html">Request 2</a></li>
-          <li><a href="location-details.html">Request 3</a></li>
-          <li><a href="location-details.html">Request 4</a></li>
-          <li><a href="location-details.html">Request 5</a></li>
-          <li><a href="location-details.html">Request 6</a></li>
-        </ul>
-        <br />
-        <a href="create-request.html" class="btn btn-primary">Create Request</a>
+        {% for req in recognition_requests %}
+        <h2>Запит: {{ req.title }}</h2>
+        {% if req.answers.all %}
+          <ul>
+            {% for answer in req.answers.all %}
+              <li>
+                Відповідь: {{ answer.latitude }}, {{ answer.longitude }}
+                (відправлено: {{ answer.submitted_at }})
+              </li>
+            {% endfor %}
+          </ul>
+          <div id="map-{{ req.id }}" class="map-container"></div>
+        {% else %}
+          <p>Відповідей немає.</p>
+        {% endif %}
+      {% endfor %}
+    
+      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          {% for req in recognition_requests %}
+            {% if req.answers.all %}
+              (function() {
+                var containerId = "map-{{ req.id }}";  // унікальний id контейнера карти
+                var map = L.map(containerId).setView([49.8397, 24.0297], 13); // Центр Львова
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+                var markers = []; // Масив для збереження координат маркерів
+                {% for answer in req.answers.all %}
+                  // Виводимо координати як рядок, замінюємо кому на крапку та конвертуємо в число
+                  var lat = parseFloat("{{ answer.latitude|floatformat:'6'|escapejs }}".replace(',', '.'));
+                  var lng = parseFloat("{{ answer.longitude|floatformat:'6'|escapejs }}".replace(',', '.'));
+                  var marker = L.marker([lat, lng]).addTo(map)
+                    .bindPopup("<b>Відповідь</b><br>Координати: " + lat + ", " + lng);
+                  markers.push([lat, lng]);
+                {% endfor %}
+              })();
+            {% endif %}
+          {% endfor %}
+        });
+      </script>
+        <a href="{% url 'recognation_request_create' %}" class="btn btn-primary">Create Request</a>
       </section>
     </div>
   </main>

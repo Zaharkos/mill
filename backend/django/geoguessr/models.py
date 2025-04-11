@@ -38,6 +38,10 @@ class User(AbstractUser):
             self.is_active = False
             self.save()
 
+    def has_role(self, role: str) -> bool:
+        """Checks if users has needed role"""
+        return role == self.role
+
     def __str__(self):
         """
         Return the string representation of the user.
@@ -119,3 +123,18 @@ class Answer(models.Model):
         This shows the latitude and longitude of the answer.
         """
         return f"{self.latitude} | {self.longitude}"
+
+
+class MilitaryPromote(models.Model):
+    """
+    Model for military promote request
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    seeker = models.ForeignKey(User, on_delete=models.CASCADE, related_name="promote_request")
+
+    def promote_user(self):
+        seeker: User = self.seeker
+        seeker.role = 'military'
+        seeker.save()
+
+        self.delete()

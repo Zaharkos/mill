@@ -147,10 +147,10 @@
 
   <aside class="sidebar">
     <ul class="sidebar-menu">
-      <li><a href="profile.html">Profile</a></li>
+      <li><a href="{% url 'account' %}">Profile</a></li>
       <li><a href="#">Submit location</a></li>
     </ul>
-    <button class="btn-promote">Promote to military</button>
+    <a class="btn btn-promote" href="{% url 'request-promote' %}">Promote</a>
   </aside>
 
   <main class="content">
