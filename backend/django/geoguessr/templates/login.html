@@ -8,6 +8,9 @@
             <form method="post" class="signup-form">
                 {% csrf_token %}
                 {{ form.as_p }}
+                {% for message in error_messages %}
+                    <p>Error: {{ message }}</p>
+                {% endfor %}
                 <button type="submit" class="btn-signup">Sign up</button>
             </form>    
             <!-- <a href="forgot-password.html" class="forgot-password">Forgot password?</a> -->

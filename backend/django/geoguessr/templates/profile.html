@@ -177,32 +177,6 @@
           <p>Відповідей немає.</p>
         {% endif %}
       {% endfor %}
-    
-      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-      <script>
-        document.addEventListener("DOMContentLoaded", function() {
-          {% for req in recognition_requests %}
-            {% if req.answers.all %}
-              (function() {
-                var containerId = "map-{{ req.id }}";  // унікальний id контейнера карти
-                var map = L.map(containerId).setView([49.8397, 24.0297], 13); // Центр Львова
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                  attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(map);
-                var markers = []; // Масив для збереження координат маркерів
-                {% for answer in req.answers.all %}
-                  // Виводимо координати як рядок, замінюємо кому на крапку та конвертуємо в число
-                  var lat = parseFloat("{{ answer.latitude|floatformat:'6'|escapejs }}".replace(',', '.'));
-                  var lng = parseFloat("{{ answer.longitude|floatformat:'6'|escapejs }}".replace(',', '.'));
-                  var marker = L.marker([lat, lng]).addTo(map)
-                    .bindPopup("<b>Відповідь</b><br>Координати: " + lat + ", " + lng);
-                  markers.push([lat, lng]);
-                {% endfor %}
-              })();
-            {% endif %}
-          {% endfor %}
-        });
-      </script>
         <a href="{% url 'recognation_request_create' %}" class="btn btn-primary">Create Request</a>
       </section>
     </div>

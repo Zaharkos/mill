@@ -153,19 +153,35 @@
       </aside>
       <section class="profile-main">
         <h1 class="main-title">Create new request</h1>
-        <form>
+        {% csrf_token %}
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+        
+          <label for="photo">{{ form.photos.label }}</label>
           <div class="form-group">
-            <label for="photo">Upload photo of location</label>
-            <input type="file" id="photo" />
+            {{ form.photos }}
           </div>
+        
+          <label for="title">{{ form.title.label }}</label>
           <div class="form-group">
-            <label for="title">Input request title</label>
-            <input type="text" id="title" />
+            {{ form.title }}
           </div>
+        
+          <label for="estimated_date">{{ form.estimated_date.label }}</label>
           <div class="form-group">
-            <label for="description">Input description</label>
-            <textarea id="description"></textarea>
+            {{ form.estimated_date }}
           </div>
+        
+          <label for="estimated_location">{{ form.estimated_location.label }}</label>
+          <div class="form-group">
+            {{ form.estimated_location }}
+          </div>
+        
+          <label for="description">{{ form.description.label }}</label>
+          <div class="form-group">
+            {{ form.description }}
+          </div>
+        
           <div style="text-align: center;">
             <button type="submit" class="btn btn-primary">Send request</button>
           </div>

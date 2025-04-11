@@ -50,7 +50,27 @@ class RecognitionRequestForm(forms.ModelForm):
 
     class Meta:
         model = RecognitionRequest
-        fields = ['title', 'description', 'estimated_date', 'estimated_location']
+        fields = ['title', 'estimated_date', 'estimated_location', 'description']
+
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'id': 'title',
+                'class': 'form-control',
+            }),
+            'estimated_date': forms.Textarea(attrs={
+                'id': 'estimated_date',
+                'class': 'form-control',
+            }),
+            'estimated_location': forms.Textarea(attrs={
+                'id': 'estimated_location',
+                'class': 'form-control',
+            }),
+            'description': forms.Textarea(attrs={
+                'id': 'description',
+                'class': 'form-control',
+            }),
+        }
+
 
     def save(self, commit=True, provider=None):
         """

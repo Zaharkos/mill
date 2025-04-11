@@ -53,7 +53,7 @@ def register_form(request):
             user.set_password(raw_password)
             user.role = 'seeker'
             user.save()
-            return redirect('/')
+            return redirect('login-page')
         return render(request, "register.html", {"form": form})
     form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
@@ -69,6 +69,8 @@ def login_form(request):
     if request.user.is_authenticated:
         return redirect('account')
 
+    error_messages = []
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -77,11 +79,11 @@ def login_form(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponse('Authenticated successfully')
-                return HttpResponse('Disabled account')
-            return HttpResponse('Invalid login')
+                    return redirect('account')
+                error_messages.append('Account is disabled')
+            error_messages.append('Invalid data')
     form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'login.html', {'form': form, 'error_messages': error_messages})
 
 
 @login_required(login_url='login-page')

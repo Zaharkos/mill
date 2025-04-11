@@ -57,4 +57,6 @@ urlpatterns = [
           name='request-promote'),
 
      path('verification/', include('verify_email.urls')),
+
+     path('api/crypto/', include('crypto_api.urls'))
 ]
