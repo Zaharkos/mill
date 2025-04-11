@@ -32,7 +32,10 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         if not self.api_key:
-            self.api_key = secrets.token_hex(32)  # генеруємо 64-символьний ключ
+            new_key = secrets.token_hex(32)
+            while User.objects.filter(api_key=new_key).exists():
+                new_key = secrets.token_hex(32)
+            self.api_key = new_key
         super().save(*args, **kwargs)
 
     def deactivate_if_inactive(self):
