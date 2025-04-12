@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <header class="header">
+    <div class="logo">Location Finder</div>
+    <nav class="nav">
+      <a href="main.html">Home</a>
+      <a href="profile.html">Profile</a>
+      <a href="#">Logout</a>
+    </nav>
+  </header>
+  
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Map</title>
+  style="padding-top: 90px;"
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="main.css">
+
+</head>
+<body>
+
+  <aside class="sidebar">
+    <ul class="sidebar-menu">
+      <li><a href="profile.html">Profile</a></li>
+      <li><a href="#">Submit location</a></li>
+    </ul>
+    <button class="btn-promote">Promote to military</button>
+  </aside>
+
+  <main class="content">
+    <h1 class="main-title">Location Name</h1>
+    <div class="info-container">
+      <div class="photo carousel">
+        <img src="images/photo1.jpg" alt="Photo 1" class="carousel-image active">
+        <img src="images/photo2.jpg" alt="Photo 2" class="carousel-image">
+        <img src="images/photo3.jpg" alt="Photo 3" class="carousel-image">
+        <button class="carousel-btn prev">‹</button>
+        <button class="carousel-btn next">›</button>
+      </div>
+      <div class="map-container" id="map"></div>
+    </div>
+    <div class="description">
+      <p>Here is placed the description of the location. You can add all additionary details about this place.</p>
+    </div>
+    <div class="coordinates" id="coords">Click to add coordinates</div>
+    <button class="btn">Submit Location</button>
+  </main>
+
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([49.8397, 24.0297], 10);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    let marker;
+    
+    map.on('click', function(e) {
+      const lat = e.latlng.lat.toFixed(5);
+      const lng = e.latlng.lng.toFixed(5);
+      
+      if (marker) {
+        marker.setLatLng(e.latlng);
+      } else {
+        marker = L.marker(e.latlng).addTo(map);
+      }
+      
+      document.getElementById('coords').textContent = `Coordinates: ${lat}, ${lng}`;
+    });
+  </script>
+</body>
+</html>
