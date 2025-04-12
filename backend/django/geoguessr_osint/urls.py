@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from geoguessr import views as geoguessr_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -58,5 +60,25 @@ urlpatterns = [
 
      path('verification/', include('verify_email.urls')),
 
-     path('api/crypto/', include('crypto_api.urls'))
-]
+     path('api/crypto/', include('crypto_api.urls')),
+
+     path('recognition-request-details/<str:pk>/',
+          geoguessr_views.recognition_request_details,
+          name='recognition-request-details'),
+
+     path('promote-accept/<str:pk>/',
+          geoguessr_views.accept_promote,
+          name='accept-promote'),
+
+     path('promote-decline/<str:pk>/',
+          geoguessr_views.decline_promote,
+          name='decline-promote'),
+
+     path('admin-panel/',
+          geoguessr_views.admin_panel,
+          name='admin-panel'),
+
+     path('close-request/<str:pk>/',
+          geoguessr_views.recognition_request_close,
+          name='close-request'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

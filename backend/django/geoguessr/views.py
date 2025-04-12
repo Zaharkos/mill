@@ -1,11 +1,11 @@
 """Views for geoguessr project"""
 from django.forms import ValidationError
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from verify_email.email_handler import ActivationMailManager
-
+from django.core.paginator import Paginator
 
 from .models import MilitaryPromote, Photo, RecognitionRequest, User
 from .forms import (
@@ -79,7 +79,7 @@ def login_form(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return redirect('account')
+                    return redirect('recognation_request_list')
                 error_messages.append('Account is disabled')
             error_messages.append('Invalid data')
     form = LoginForm()
@@ -110,6 +110,7 @@ def create_recognition_request(request):
         return redirect('login-page')
     if request.method == 'POST':
         form = RecognitionRequestForm(request.POST)
+        
         if form.is_valid():
             recognition_request = form.save(commit=False)
             recognition_request.provider = request.user
@@ -121,6 +122,7 @@ def create_recognition_request(request):
                     recognition_request=recognition_request,
                     image=photo_file
                 )
+            return redirect('recognation_request', pk=recognition_request.id)
     else:
         form = RecognitionRequestForm()
     return render(request, 'create-request.html', {'form': form})
@@ -133,11 +135,15 @@ def show_recognition_requests(request):
 
     This view gets all recognition requests and shows them in a list.
     """
-    recognition_requests = RecognitionRequest.objects.all()
+    recognition_requests_list = RecognitionRequest.objects.filter(is_visible=True)
+    paginator = Paginator(recognition_requests_list, 10)
+    page_number = request.GET.get('page')
+    recognition_requests = paginator.get_page(page_number)
+
     return render(
         request,
         'recognition_request_list.html',
-        {'recog_requests': recognition_requests}
+        {'recognition_requests': recognition_requests}
     )
 
 
@@ -154,6 +160,9 @@ def get_recognition_request(request, pk):
     except ValidationError:
         return redirect('recognation_request_list')
 
+    if not recognition_request.is_visible:
+        return redirect('recognation_request_list')
+
     if request.method == "POST":
         form = AnswerForm(request.POST)
         if form.is_valid():
@@ -164,25 +173,59 @@ def get_recognition_request(request, pk):
             return render(
                 request,
                 'location-details.html',
-                {'recog_arg': recognition_request, 'form': form}
+                {'req': recognition_request, 'form': form}
             )
     else:
         form = AnswerForm()
     return render(
         request,
         'location-details.html',
-        {'recog_arg': recognition_request, 'form': form}
+        {'req': recognition_request, 'form': form}
     )
 
 
 @login_required(login_url='login-page')
 def user_account(request):
     user = request.user
-    recognition_requests = RecognitionRequest.objects.filter(provider=user)
+    recognition_requests_list = RecognitionRequest.objects.filter(provider=user)
+    paginator = Paginator(recognition_requests_list, 10)
+    page_number = request.GET.get('page')
+    recognition_requests = paginator.get_page(page_number)
+
     context = {
         'recognition_requests': recognition_requests,
     }
-    return render(request, 'profile.html', context)
+    return render(request, 'military-requests.html', context)
+
+
+@login_required(login_url='login-page')
+def recognition_request_details(request, pk):
+    try:
+        recognition_request = get_object_or_404(RecognitionRequest, pk=pk)
+    except ValidationError:
+        return redirect('recognation_request_list')
+    user = request.user
+    if recognition_request.provider != user:
+        return Http404()
+    context = {
+        'req': recognition_request,
+    }
+    return render(request, 'military-request-details.html', context)
+
+
+@login_required(login_url='login-page')
+def recognition_request_close(request, pk):
+    try:
+        recognition_request = get_object_or_404(RecognitionRequest, pk=pk)
+    except ValidationError:
+        return redirect('account')
+    user = request.user
+    if recognition_request.provider != user:
+        return Http404()
+
+    recognition_request.is_visible = False
+    recognition_request.save()
+    return redirect('account')
 
 
 @login_required(login_url='login-page')
@@ -190,6 +233,38 @@ def military_promote(request):
     user = request.user
     is_request = bool(MilitaryPromote.objects.filter(seeker=user))
     if user.has_role('provider') or is_request:
-        return redirect('account')
+        return redirect('recognation_request_list')
     MilitaryPromote.objects.create(seeker=user)
-    return redirect('account')
+    return redirect('recognation_request_list')
+
+
+@login_required(login_url='login-page')
+def admin_panel(request):
+    user = request.user
+    if not user.has_role('admin'):
+        return redirect('recognation_request_list')
+
+    promotes_list = MilitaryPromote.objects.all()
+    paginator = Paginator(promotes_list, 10)
+    page_number = request.GET.get('page')
+    promotes = paginator.get_page(page_number)
+    return render(request, 'admin.html', {'promotes': promotes})
+
+
+@login_required(login_url='login-page')
+def accept_promote(request, pk):
+    user = request.user
+    if not user.has_role('admin'):
+        return redirect('recognation_request_list')
+    promote = MilitaryPromote.objects.get(id=pk)
+    promote.promote_user()
+    return redirect('admin-panel')
+
+
+@login_required(login_url='login-page')
+def decline_promote(request, pk):
+    user = request.user
+    if not user.has_role('admin'):
+        return redirect('recognation_request_list')
+    promote = MilitaryPromote.objects.get(id=pk)
+    return redirect('admin-panel')

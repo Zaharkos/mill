@@ -1,0 +1,134 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+  }
+  
+  :root {
+    --bg-color: #111;
+    --text-color: #fff;
+    --accent-color: #5f9ea0;
+  }
+  
+  html, body {
+    height: 100%;
+  }
+  
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .login-container,
+  .signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .login-card,
+  .signup-card {
+    background-color: #fff;
+    color: #000;
+    padding: 2rem;
+    border-radius: 20px;
+    width: 350px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    position: relative;
+  }
+  
+  .back-arrow {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    color: black;
+  }
+  
+  .login-title,
+  .signup-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .divider {
+    border: none;
+    height: 2px;
+    background: black;
+    margin-bottom: 15px;
+  }
+  
+  .signup-card .divider {
+    border-top: 2px dotted #000;
+  }
+  
+  .login-form,
+  .signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+  }
+  
+  .login-form label,
+  .signup-form label {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  
+  .login-form input,
+  .signup-form input {
+    border: none;
+    border-bottom: 2px solid black;
+    padding: 8px;
+    font-size: 1rem;
+    outline: none;
+    width: 100%;
+  }
+  
+  .btn-login,
+  .btn-signup {
+    background-color: #000;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  
+  .btn-login:hover,
+  .btn-signup:hover {
+    background-color: #333;
+  }
+  
+  .forgot-password,
+  .already-have-account {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: black;
+  }
+  
+  .forgot-password:hover,
+  .already-have-account a:hover {
+    text-decoration: underline;
+  }
+  
+  .already-have-account a {
+    color: #000;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  

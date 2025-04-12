@@ -8,19 +8,29 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  
+
   <link rel="stylesheet" href="{% static 'geoguessr/css/main.css' %}">
 </head>
 <body>
-
+  
   {% include 'service_menu.html' %}
   <main>
-    <h1>Усі запити</h1>
+    <h1>Ваші запити</h1>
   {% for req in recognition_requests %}
     <div class="request-card">
       <h2>Запит: {{ req.title }}</h2>
+      <p>Дата створення: {{ req.created_at }}</p>
+      <p>Статус: {% if req.is_visible %}
+        Активний
+        {% else %}
+        Закритий
+        {% endif %}
+      </p>
       <div class="actions">
-        <a href="{% url 'recognation_request' pk=req.id %}" class="btn">Переглянути</a>
+        <a href="{% url 'recognition-request-details' pk=req.id %}" class="btn">Переглянути</a>
+        {% if req.is_visible %}
+          <a href="{% url 'close-request' pk=req.id %}" class="btn">Закрити запит</a>
+            {% endif %}
       </div>
     </div>
   {% endfor %}

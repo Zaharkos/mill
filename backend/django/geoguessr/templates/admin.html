@@ -5,96 +5,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
         :root {
-            --bg-color: #111;
-            --text-color: #fff;
-            --accent-color: #5f9ea0;
-            --secondary-bg: #2e2e2e;
+          --bg-color: #111;
+          --text-color: #fff;
+          --accent-color: #5f9ea0;
+          --secondary-bg: #2e2e2e;
+          --sidebar-width: 250px;
+          --header-height: 70px;
+        }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: "Poppins", sans-serif;
+        }
+        html, body {
+          height: 100%;
         }
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+          background-color: var(--bg-color);
+          color: var(--text-color);
+          min-height: 100vh;
         }
         .header {
-            background-color: #000;
-            padding: 1.5rem;
-            text-align: center;
-            font-size: 2rem;
-            font-weight: bold;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: var(--header-height);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: #000;
+          padding: 0 2rem;
+          z-index: 1000;
         }
-        .container {
-            display: flex;
-            flex: 1;
+        .logo {
+          font-size: 1.5rem;
+          font-weight: 600;
+        }
+        .nav a {
+          color: var(--text-color);
+          text-decoration: none;
+          margin-left: 1rem;
+          font-weight: 400;
+          transition: color 0.3s;
+        }
+        .nav a:hover {
+          color: var(--accent-color);
         }
         .sidebar {
-            width: 250px;
-            background-color: var(--secondary-bg);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+          position: fixed;
+          top: var(--header-height);
+          left: 0;
+          width: var(--sidebar-width);
+          height: 100%;
+          background-color: var(--secondary-bg);
+          padding: 1rem;
+          overflow-y: auto;
+          border-right: 1px solid #333;
         }
-        .sidebar button {
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            border: none;
-            padding: 1rem;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            border-radius: 5px;
+        .sidebar-menu {
+          list-style: none;
+          margin-bottom: 2rem;
         }
-        .sidebar button:hover {
-            background-color: #4d8282;
+        .sidebar-menu li {
+          margin-bottom: 1rem;
         }
-        .main-content {
-            flex: 1;
-            padding: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: #ccc;
+        .sidebar-menu a {
+          text-decoration: none;
+          color: #ccc;
+          transition: color 0.3s;
         }
-        .profile-btn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            padding: 1rem 1.5rem;
-            border-radius: 10px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
+        .sidebar-menu a:hover {
+          color: var(--accent-color);
         }
-        .profile-btn:hover {
-            background-color: #4d8282;
+        main {
+          margin-left: calc(var(--sidebar-width) + 1rem);
+          padding: calc(var(--header-height) + 1rem) 2rem 2rem;
         }
-    </style>
+        .request-card {
+          background: #1a1a1a;
+          border-radius: 10px;
+          padding: 1.5rem;
+          margin-bottom: 2rem;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .request-card h2 {
+          color: var(--accent-color);
+          margin-bottom: 0.5rem;
+        }
+        .request-card p {
+          color: #ccc;
+          margin-bottom: 0.5rem;
+        }
+        .request-card .actions {
+          display: flex;
+          gap: 1rem;
+        }
+        .btn {
+          padding: 0.6rem 1.2rem;
+          background-color: var(--accent-color);
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          text-decoration: none;
+          font-size: 1rem;
+          transition: background-color 0.3s;
+        }
+        .btn:hover {
+          background-color: #4d8282;
+        }
+      </style>
 </head>
 <body>
-    <div class="header">Administrator</div>
-    <div class="container">
-        <div class="sidebar">
-            <button>List of people who make requests</button>
-            <button>List of people who answer requests</button>
-            <button>Compose</button>
-            <button>Change user's status</button>
-            <button>Edit answers</button>
-        </div>
-        <div class="main-content">Welcome to the Admin Panel</div>
+
+  {% include 'service_menu.html' %}
+    <main>
+      <h1>Запити на отримання прав військового</h1>
+    {% for promote in promotes %}
+    <div class="request-card">
+      <h2>Запит: {{ promote.seeker.username }}</h2>
+
+      <div class="actions">
+        <a href="{% url 'accept-promote' pk=promote.id %}" class="btn">Прийняти</a>
+        <a href="{% url 'decline-promote' pk=promote.id %}" class="btn">Відхилити</a>
+      </div>
     </div>
-    <a href="admin.html" class="profile-btn">Profile</a>
+  {% endfor %}
+  <div class="pagination">
+    {% if promotes.has_previous %}
+      <a href="?page={{ promotes.previous_page_number }}">Попередня</a>
+    {% endif %}
+  
+    <span>Сторінка {{ promotes.number }} з {{ promotes.paginator.num_pages }}</span>
+  
+    {% if promotes.has_next %}
+      <a href="?page={{ promotes.next_page_number }}">Наступна</a>
+    {% endif %}
+  </div>
+</main>
 </body>
 </html>

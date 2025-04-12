@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Деталі запиту</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'geoguessr/css/main.css' %}">
+</head>
+<body>
+  {% include 'service_menu.html' %}
+  <main>
+    <div class="info-box">
+      <h2>Запит: {{ req.title }}</h2>
+      <p><strong>Дата створення:</strong> {{ req.created_at }}</p>
+      <p><strong>Опис:</strong> {{ req.description }}</p>
+    </div>
+    <div id="map"></div>
+    {% if req.is_visible %}
+    <a href="{% url 'close-request' pk=req.id %}?next={{ request.path|urlencode }}" class="btn">Закрити запит</a>
+      {% endif %}
+  </main>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      (function() {
+        var containerId = "map";  // унікальний id контейнера карти
+        var map = L.map(containerId).setView([49.8397, 24.0297], 13); // Центр Львова
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        var markers = []; // Масив для збереження координат маркерів
+        {% for answer in req.answers.all %}
+          // Виводимо координати як рядок, замінюємо кому на крапку та конвертуємо в число
+          var lat = parseFloat("{{ answer.latitude|floatformat:'6'|escapejs }}".replace(',', '.'));
+          var lng = parseFloat("{{ answer.longitude|floatformat:'6'|escapejs }}".replace(',', '.'));
+          var marker = L.marker([lat, lng]).addTo(map)
+            .bindPopup("<b>Відповідь</b><br>Координати: " + lat + ", " + lng);
+          markers.push([lat, lng]);
+        {% endfor %}
+      })();
+    });
+  </script>
+</body>
+</html>

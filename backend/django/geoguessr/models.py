@@ -74,6 +74,7 @@ class RecognitionRequest(models.Model):
     description = models.TextField(blank=True)
     estimated_date = models.CharField(max_length=25, null=True)
     estimated_location = models.CharField(max_length=255, blank=True)
+    created_at = models.DateField(default=now())
     is_visible = models.BooleanField(default=True)
 
     def __str__(self):
