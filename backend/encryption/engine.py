@@ -19,7 +19,7 @@ class Engine:
         if Engine.__engine is not None:
             return
 
-        Engine.__engine = ctypes.cdll.LoadLibrary("./backend/encryption/engine.so")
+        Engine.__engine = ctypes.cdll.LoadLibrary("../encryption/engine.so")
 
         Engine.__engine.encode.argtypes = [ctypes.c_char_p, ctypes.c_uint64, ctypes.c_char_p, ctypes.c_char_p]
         Engine.__engine.encode.restype = ctypes.c_uint64
@@ -92,15 +92,3 @@ class Engine:
         key_real_size = Engine.__engine.generateRandomKey(res_buffer)
 
         return res_buffer.raw[:key_real_size]
-
-if __name__ == "__main__":
-    key = Engine().generate_random_key()
-
-    with open("backend/encryption/data/test_img.jpg", "rb") as img:
-        raw_data = img.read()
-
-        encoded = Engine().encode(raw_data, key)
-
-        decoded = Engine().decode(encoded, key)
-
-        print(raw_data == decoded)

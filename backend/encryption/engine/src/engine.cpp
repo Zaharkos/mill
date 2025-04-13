@@ -9,7 +9,7 @@
 Engine::Engine() :
     m_randomEngine(std::random_device{}())
 {
-    std::ifstream("./backend/encryption/data/pi.txt") >> m_piDigits;
+    std::ifstream("../encryption/data/pi.txt") >> m_piDigits;
 }
 
 std::string Engine::encode(std::string stringData, const std::string& key)
@@ -20,6 +20,10 @@ std::string Engine::encode(std::string stringData, const std::string& key)
     sizePref = std::string(m_maxSizeDigits - sizePref.size(), '0') + sizePref;
     stringData = sizePref + stringData;
 
+    if (stringData.size() < (1 << 14)) // <= 16 KB
+    {
+        return this->encode_with_block_size<1>(stringData, keyData, false);
+    }
     if (stringData.size() < (1 << 17)) // <= 128 KB
     {
         return this->encode_with_block_size<8>(stringData, keyData, false);
@@ -54,7 +58,11 @@ std::string Engine::decode(const std::string& encodedData, const std::string& ke
 
     std::string res{};
 
-    if (encodedData.size() <= (1 << 17)) // <= 128 KB
+    if (encodedData.size() <= (1 << 14)) // <= 16 KB
+    {
+        res = this->encode_with_block_size<1>(encodedData, keyData, true);
+    }
+    else if (encodedData.size() <= (1 << 17)) // <= 128 KB
     {
         res = this->encode_with_block_size<8>(encodedData, keyData, true);
     }
@@ -208,13 +216,12 @@ std::string Engine::encode_with_block_size(const std::string& stringData, const 
     }
 
     data = reverseTreap.getData();
-    std::string res(stringData.size(), 0);
 
+    std::string res(stringData.size(), 0);
     for (int i = 0; i < res.size(); i++)
     {
         for (int j = 0; j < 8; j++)
         {
-            stringData[(i * blockSize + j) / 8] & (1 << (j % 8));
             res[i] |= data[(i * 8 + j) / blockSize][(i * 8 + j) % blockSize] * (1 << j);
         }
     }
