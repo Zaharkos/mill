@@ -237,6 +237,7 @@ void ReverseTreap<blockSize>::getDataFromNodes(ReverseTreap::Node* node, std::ve
 	this->getDataFromNodes(node->right, data);
 }
 
+template class ReverseTreap<1>; // 1 bit
 template class ReverseTreap<8>; // 1 byte
 template class ReverseTreap<64>; // 8 bytes
 template class ReverseTreap<512>; // 64 bytes
