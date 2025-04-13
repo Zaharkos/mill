@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Profile</title>
+  <link rel="stylesheet" href="main.css">
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="{% static 'geoguessr/css/main.css' %}">
+</head>
+<body>
+  {% include 'service_menu.html' %}
+
+  <main>
+
+    <!-- Форма для зміни імені користувача -->
+    <section class="profile-section" id="username">
+        <h2>Change Username</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="current-username">Current Username</label>
+                <input type="text" id="current-username" class="form-control" disabled value="{{ user.username }}">
+            </div>
+            <div class="form-group">
+                {{ username_form.new_username.label_tag }}
+                {{ username_form.new_username }}
+                {% if username_form.new_username.errors %}
+                    <div class="error">
+                        {{ username_form.new_username.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            <button type="submit" name="update_username" class="btn">Update Username</button>
+        </form>
+    </section>
+
+    <!-- Форма для зміни пароля -->
+    <section class="profile-section" id="password">
+        <h2>Change Password</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                {{ password_form.current_password.label_tag }}
+                {{ password_form.current_password }}
+                {% if password_form.current_password.errors %}
+                    <div class="error">
+                        {{ password_form.current_password.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ password_form.new_password.label_tag }}
+                {{ password_form.new_password }}
+                {% if password_form.new_password.errors %}
+                    <div class="error">
+                        {{ password_form.new_password.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ password_form.confirm_password.label_tag }}
+                {{ password_form.confirm_password }}
+                {% if password_form.confirm_password.errors %}
+                    <div class="error">
+                        {{ password_form.confirm_password.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            <!-- Загальні помилки форми -->
+            {% if password_form.non_field_errors %}
+                <div class="error">
+                    {{ password_form.non_field_errors }}
+                </div>
+            {% endif %}
+            <button type="submit" name="update_password" class="btn">Update Password</button>
+        </form>
+    </section>
+
+    <!-- Форма для зміни email -->
+    <section class="profile-section" id="email">
+        <h2>Change Email</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="current-email">Current Email</label>
+                <input type="email" id="current-email" class="form-control" disabled value="{{ user.email }}">
+            </div>
+            <div class="form-group">
+                {{ email_form.new_email.label_tag }}
+                {{ email_form.new_email }}
+                {% if email_form.new_email.errors %}
+                    <div class="error">
+                        {{ email_form.new_email.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            <button type="submit" name="update_email" class="btn">Update Email</button>
+        </form>
+    </section>
+
+</main>
+    {% if user.role == 'seeker' %}
+    <div class="profile-section promote-section">
+      <h2>Promote to Military</h2>
+      <p>Request elevated access for military personnel.</p>
+        <a class="btn btn-promote" href="{% url 'request-promote' %}">Promote</a>
+    </div>
+  </main>
+  {% endif %}
+
+  <footer class="footer">
+    <p>© 2025 Location Finder. All rights reserved.</p>
+  </footer>
+</body>
+</html>
+

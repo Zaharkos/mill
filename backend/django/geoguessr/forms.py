@@ -172,3 +172,79 @@ class AnswerForm(forms.ModelForm):
             'longitude': forms.HiddenInput(attrs={'id': 'lng', 'step': 'any'}),
         }
         hidden = ['latitude', 'longitude']
+
+
+class ChangeUsernameForm(forms.Form):
+    new_username = forms.CharField(
+        max_length=150,
+        label="New Username",
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter new username'})
+    )
+
+    def clean_new_username(self):
+        username = self.cleaned_data.get('new_username')
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("Ім'я користувача вже існує.")
+        if not re.match(r'^\w+$', username):
+            raise ValidationError("Імʼя користувача може містити лише цифри, літери та нижні підкреслення.")
+        return username
+
+class ChangePasswordForm(forms.Form):
+    current_password = forms.CharField(
+        label="Current Password",
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter current password'})
+    )
+    new_password = forms.CharField(
+        label="New Password",
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter new password'})
+    )
+    confirm_password = forms.CharField(
+        label="Confirm New Password",
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm new password'})
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        """
+        Зберігаємо поточного користувача для перевірки поточного пароля.
+        """
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_current_password(self):
+        current_password = self.cleaned_data.get('current_password')
+        if not self.user.check_password(current_password):
+            raise ValidationError("Невірний поточний пароль.")
+        return current_password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        # Перевірка довжини та змісту нового пароля
+        if new_password:
+            if len(new_password) < 8:
+                self.add_error("new_password", "Пароль має містити мінімум 8 символів.")
+            if not any(char.isdigit() for char in new_password):
+                self.add_error("new_password", "Пароль має містити хоча б 1 цифру.")
+            if not any(char.isalpha() for char in new_password):
+                self.add_error("new_password", "Пароль має містити хоча б 1 букву.")
+
+        if new_password and confirm_password and new_password != confirm_password:
+            raise ValidationError("Паролі не співпадають.")
+
+        return cleaned_data
+
+
+
+class ChangeEmailForm(forms.Form):
+    new_email = forms.EmailField(
+        label="New Email",
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter new email'})
+    )
+
+    def clean_new_email(self):
+        new_email = self.cleaned_data.get("new_email")
+        if User.objects.filter(email=new_email).exists():
+            raise ValidationError("Ця адреса вже є зайнятою.")
+        return new_email

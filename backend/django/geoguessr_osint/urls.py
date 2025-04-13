@@ -39,7 +39,7 @@ urlpatterns = [
          name='logout'),
 
     path('account',
-         geoguessr_views.user_account,
+         geoguessr_views.military_request_list,
          name='account'),
 
     path('recognation-requests/create',
@@ -81,4 +81,8 @@ urlpatterns = [
      path('close-request/<str:pk>/',
           geoguessr_views.recognition_request_close,
           name='close-request'),
+
+     path('profile/',
+          geoguessr_views.profile,
+          name='profile')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
+
+{% load static %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'geoguessr/css/auth.css' %}">
+{% endblock %}
 {% block body_content %}
-<main class="signup-container">
   <div class="signup-card">
     <a href="{% url 'main-page' %}" class="back-arrow">←</a>
 
@@ -18,5 +22,4 @@
       <a href="{% url 'login-page' %}">Login</a>
     </p>
   </div>
-</main>
 {% endblock %}

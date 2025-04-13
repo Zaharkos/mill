@@ -45,31 +45,50 @@
 
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>            
-    var containerId = "map-{{ req.id }}";
-
+  <script>
     const map = L.map('map').setView([49.8397, 24.0297], 10);
-    
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors'
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
-    
+
     let marker;
-    map.on('click', function(e) {      
+
+    map.on('click', function (e) {
       const lat = e.latlng.lat.toFixed(5);
       const lng = e.latlng.lng.toFixed(5);
-      
+
       if (marker) {
         marker.setLatLng(e.latlng);
       } else {
         marker = L.marker(e.latlng).addTo(map);
       }
-      document.getElementById('lat').value = lat;
-      document.getElementById('lng').value = lng;
 
-      
-      document.getElementById('coords').textContent = `Координати: ${lat}, ${lng}`;
+      document.getElementById('coords').textContent = `Coordinates: ${lat}, ${lng}`;
     });
+
+    const images = document.querySelectorAll('.carousel-image');
+    const prevBtn = document.querySelector('.carousel-btn.prev');
+    const nextBtn = document.querySelector('.carousel-btn.next');
+    let current = 0;
+
+    function updateCarousel() {
+      images.forEach((img, index) => {
+        img.classList.toggle('active', index === current);
+      });
+    }
+
+    prevBtn.addEventListener('click', () => {
+      current = (current - 1 + images.length) % images.length;
+      updateCarousel();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      current = (current + 1) % images.length;
+      updateCarousel();
+    });
+
+    updateCarousel();
   </script>
 </body>
 </html>

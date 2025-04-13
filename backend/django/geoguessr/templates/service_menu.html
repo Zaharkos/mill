@@ -9,15 +9,12 @@
   </header>
   <aside class="sidebar">
     <ul class="sidebar-menu">
+        <li><a href="{% url 'profile' %}">Профіль</a></li>
       {% if user.role != 'seeker'%}
         <li><a href="{% url 'account' %}">Мої запити</a></li>
       {% endif %}
         <li><a href="{% url 'recognation_request_list' %}">Усі запити</a></li>
         {% block another_links %}{% endblock %}
     </ul>
-    {% if user.role == 'seeker' %}
-    <a class="btn btn-promote" href="{% url 'request-promote' %}">Promote</a>
-    {% else %}
     <a class="btn btn-promote" href="{% url 'recognation_request_create' %}">Create request</a>
-    {% endif %}
   </aside>

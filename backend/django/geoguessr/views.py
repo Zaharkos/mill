@@ -1,8 +1,9 @@
 """Views for geoguessr project"""
+from django.contrib import messages
 from django.forms import ValidationError
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from verify_email.email_handler import ActivationMailManager
 from django.core.paginator import Paginator
@@ -10,6 +11,9 @@ from django.core.paginator import Paginator
 from .models import MilitaryPromote, Photo, RecognitionRequest, User
 from .forms import (
     AnswerForm,
+    ChangeEmailForm,
+    ChangePasswordForm,
+    ChangeUsernameForm,
     RecognitionRequestForm,
     RegistrationForm,
     LoginForm,
@@ -79,7 +83,7 @@ def login_form(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return redirect('recognation_request_list')
+                    return redirect('profile')
                 error_messages.append('Account is disabled')
             error_messages.append('Invalid data')
     form = LoginForm()
@@ -96,6 +100,48 @@ def logout_view(request):
     logout(request)
     return redirect('login-page')
 
+@login_required(login_url='login-page')
+def profile(request):
+    user = request.user
+
+    # Встановлюємо початкові значення для форм
+    username_form = ChangeUsernameForm(initial={'new_username': user.username})
+    password_form = ChangePasswordForm(user=user)
+    email_form = ChangeEmailForm(initial={'new_email': user.email})
+
+    if request.method == "POST":
+        if 'update_username' in request.POST:
+            username_form = ChangeUsernameForm(request.POST)
+            if username_form.is_valid():
+                user.username = username_form.cleaned_data.get('new_username')
+                user.save()
+                messages.success(request, "Username обновлено успішно!")
+                return redirect('profile')  # замініть 'profile' на відповідну назву URL
+        elif 'update_password' in request.POST:
+            password_form = ChangePasswordForm(user, request.POST)
+            if password_form.is_valid():
+                user.set_password(password_form.cleaned_data.get('new_password'))
+                user.save()
+                # Оновлюємо сесію, щоб користувач не був відключений після зміни пароля
+                update_session_auth_hash(request, user)
+                messages.success(request, "Пароль обновлено успішно!")
+                return redirect('profile')
+        elif 'update_email' in request.POST:
+            email_form = ChangeEmailForm(request.POST)
+            if email_form.is_valid():
+                user.email = email_form.cleaned_data.get('new_email')
+                user.save()
+                messages.success(request, "Email оновлено успішно!")
+                return redirect('profile')
+
+    context = {
+        "username_form": username_form,
+        "password_form": password_form,
+        "email_form": email_form,
+        "user": user,
+    }
+
+    return render(request, 'profile.html', context)
 
 @login_required(login_url='login-page')
 def create_recognition_request(request):
@@ -185,8 +231,11 @@ def get_recognition_request(request, pk):
 
 
 @login_required(login_url='login-page')
-def user_account(request):
+def military_request_list(request):
     user = request.user
+    if user.has_role('seeker'):
+        return redirect('profile')
+
     recognition_requests_list = RecognitionRequest.objects.filter(provider=user)
     paginator = Paginator(recognition_requests_list, 10)
     page_number = request.GET.get('page')
@@ -231,11 +280,13 @@ def recognition_request_close(request, pk):
 @login_required(login_url='login-page')
 def military_promote(request):
     user = request.user
+    if not user.has_role('seeker'):
+        return redirect('profile')
     is_request = bool(MilitaryPromote.objects.filter(seeker=user))
     if user.has_role('provider') or is_request:
-        return redirect('recognation_request_list')
+        return redirect('profile')
     MilitaryPromote.objects.create(seeker=user)
-    return redirect('recognation_request_list')
+    return redirect('profile')
 
 
 @login_required(login_url='login-page')

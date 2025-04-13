@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'geoguessr/css/auth.css' %}">
+{% endblock %}
 {% block body_content %}
-    <main class="login-container">
         <div class="login-card">
             <a href="{% url 'main-page' %}" class="back-arrow">←</a>
             <h1 class="login-title">Welcome back!</h1>
@@ -15,5 +18,4 @@
             </form>    
             <!-- <a href="forgot-password.html" class="forgot-password">Forgot password?</a> -->
         </div>
-    </main>
 {% endblock %}
