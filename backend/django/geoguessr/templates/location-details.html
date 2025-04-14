@@ -64,6 +64,9 @@
         marker = L.marker(e.latlng).addTo(map);
       }
 
+      document.getElementById('lat').value = lat;
+      document.getElementById('lng').value = lng;
+
       document.getElementById('coords').textContent = `Coordinates: ${lat}, ${lng}`;
     });
 
