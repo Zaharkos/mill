@@ -10,7 +10,7 @@ from django.core.paginator import Paginator
 import ultraimport
 
 Engine = ultraimport("__dir__/../../encryption/engine.py", "Engine")
-key = Engine().generate_random_key()
+key = bytes(b'9991950:364322:4:4:7:2:1') #Engine().generate_random_key()
 
 from .models import MilitaryPromote, Photo, RecognitionRequest, User
 from .forms import (
@@ -120,13 +120,12 @@ def profile(request):
                 user.username = username_form.cleaned_data.get('new_username')
                 user.save()
                 messages.success(request, "Username обновлено успішно!")
-                return redirect('profile')  # замініть 'profile' на відповідну назву URL
+                return redirect('profile')
         elif 'update_password' in request.POST:
             password_form = ChangePasswordForm(user, request.POST)
             if password_form.is_valid():
                 user.set_password(password_form.cleaned_data.get('new_password'))
                 user.save()
-                # Оновлюємо сесію, щоб користувач не був відключений після зміни пароля
                 update_session_auth_hash(request, user)
                 messages.success(request, "Пароль обновлено успішно!")
                 return redirect('profile')
@@ -214,13 +213,16 @@ def get_recognition_request(request, pk):
         return redirect('recognation_request_list')
 
     if request.method == "POST":
+        print(request.POST)
         form = AnswerForm(request.POST)
+        print("JGSFLK:GJSFLKGJ:SFG:JKLSKLGJKLSJFKL:GJ:SFJKGL:JSFKLGJKL:SJKGL:SKJL:")
         if form.is_valid():
+            print("JGSFLK:GJSFLKGJ:SFG:JKLSKLGJKLSJFKL:GJ:SFJKGL:JSFKLGJKL:SJKGL:SKJL:")
             answer = form.save(commit=False)
             answer.seeker_id = request.user.id
             answer.recognition_request = recognition_request
-            answer.longitude = Engine.encode(bytes(answer.longitude.encode("utf-8")), key)
-            answer.latitude = Engine.encode(bytes(answer.latitude.encode("utf-8")), key)
+            answer.longitude = Engine().encode(bytes(str(answer.longitude).encode("utf-8")), key)
+            answer.latitude = Engine().encode(bytes(str(answer.latitude).encode("utf-8")), key)
             answer.save()
             return render(
                 request,
@@ -262,6 +264,10 @@ def recognition_request_details(request, pk):
     user = request.user
     if recognition_request.provider != user:
         return Http404()
+    all_coordinates = recognition_request.answers.all()
+    for i, coord in enumerate(all_coordinates):
+        all_coordinates[i].longitude = Engine().decode(coord.longitude, key)
+        all_coordinates[i].latitude = Engine().decode(coord.latitude, key)
     context = {
         'req': recognition_request,
     }

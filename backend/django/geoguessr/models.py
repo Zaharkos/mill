@@ -123,8 +123,8 @@ class Answer(models.Model):
         related_name="answers"
     )
     seeker = models.ForeignKey(User, on_delete=models.CASCADE, related_name="answers")
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.BinaryField(editable=True)
+    longitude = models.BinaryField(editable=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
