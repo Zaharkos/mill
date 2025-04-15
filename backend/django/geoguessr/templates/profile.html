@@ -15,6 +15,31 @@
   />
 
   <link rel="stylesheet" href="{% static 'geoguessr/css/main.css' %}">
+
+  <style>
+    .hover-container {
+      position: relative;
+      display: inline-block;
+      padding: 10px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+    .hidden-field {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      padding: 10px;
+      background-color: black;
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      white-space: nowrap;
+      z-index: 1000;
+    }
+    .hover-container:hover .hidden-field {
+      display: block;
+    }
+  </style>
 </head>
 <body>
   {% include 'service_menu.html' %}
@@ -23,6 +48,12 @@
 
     <!-- Форма для зміни імені користувача -->
     <section class="profile-section" id="username">
+        <div class="hover-container">
+            Ваш api-key (Наведіть сюди)
+            <div class="hidden-field">
+            {{ request.user.api_key }}
+            </div>
+        </div>
         <h2>Change Username</h2>
         <form method="post" novalidate>
             {% csrf_token %}
