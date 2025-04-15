@@ -2,7 +2,7 @@ import re
 from django.core.exceptions import ValidationError
 from django import forms
 from .models import Answer, RecognitionRequest, User
-
+import struct
 class MultipleFileInput(forms.ClearableFileInput):
     """
     A widget that allows the selection of multiple files.
@@ -161,17 +161,48 @@ class LoginForm(forms.Form):
 class AnswerForm(forms.ModelForm):
     """
     Form for providing an answer to a recognition request.
-
-    This form collects the latitude and longitude as text inputs.
     """
+    # form‐level fields for user input
+    latitude  = forms.FloatField(widget=forms.HiddenInput(attrs={'id': 'lat'}))
+    longitude = forms.FloatField(widget=forms.HiddenInput(attrs={'id': 'lng'}))
+
     class Meta:
         model = Answer
-        fields = ['latitude', 'longitude']
-        widgets = {
-            'latitude': forms.HiddenInput(attrs={'id': 'lat', 'step': 'any'}),
-            'longitude': forms.HiddenInput(attrs={'id': 'lng', 'step': 'any'}),
-        }
-        hidden = ['latitude', 'longitude']
+        # we’re *not* including the model’s ByteFields here,
+        # since we handle them manually
+        fields = []
+
+    def clean(self):
+        cleaned = super().clean()
+        lat = cleaned.get('latitude')
+        lng = cleaned.get('longitude')
+
+        # standard range checks
+        if lat is None:
+            self.add_error('latitude', 'Latitude is required.')
+        elif not (-90 <= lat <= 90):
+            self.add_error('latitude', 'Latitude must be between -90 and 90.')
+
+        if lng is None:
+            self.add_error('longitude', 'Longitude is required.')
+        elif not (-180 <= lng <= 180):
+            self.add_error('longitude', 'Longitude must be between -180 and 180.')
+
+        # if there are any field errors, bail out early
+        if self.errors:
+            return cleaned
+
+        # pack each float as an 8‐byte big‑endian double
+        # you can adjust format ('>f' for 4‐byte float) if you prefer
+        self.instance.latitude  = struct.pack('>d', lat)
+        self.instance.longitude = struct.pack('>d', lng)
+
+        return cleaned
+
+    def save(self, commit=True):
+        # by now instance.latitude/longitude are bytes,
+        # so the ByteField will accept them cleanly
+        return super().save(commit=commit)
 
 
 class ChangeUsernameForm(forms.Form):
