@@ -34,7 +34,7 @@
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
         var markers = []; // Масив для збереження координат маркерів
-        {% for answer in req.answers.all %}
+        {% for answer in decrypt_coords %}
           // Виводимо координати як рядок, замінюємо кому на крапку та конвертуємо в число
           var lat = parseFloat("{{ answer.latitude|floatformat:'6'|escapejs }}".replace(',', '.'));
           var lng = parseFloat("{{ answer.longitude|floatformat:'6'|escapejs }}".replace(',', '.'));

@@ -8,9 +8,10 @@ from django.contrib.auth.decorators import login_required
 from verify_email.email_handler import ActivationMailManager
 from django.core.paginator import Paginator
 import ultraimport
+import struct
 
 Engine = ultraimport("__dir__/../../encryption/engine.py", "Engine")
-key = bytes(b'9991950:364322:4:4:7:2:1') #Engine().generate_random_key()
+key = b'9991950:364322:4:4:7:2:1' #Engine().generate_random_key()
 
 from .models import MilitaryPromote, Photo, RecognitionRequest, User
 from .forms import (
@@ -159,7 +160,7 @@ def create_recognition_request(request):
         return redirect('login-page')
     if request.method == 'POST':
         form = RecognitionRequestForm(request.POST)
-        
+
         if form.is_valid():
             recognition_request = form.save(commit=False)
             recognition_request.provider = request.user
@@ -167,6 +168,9 @@ def create_recognition_request(request):
 
             photos = request.FILES.getlist('photos')
             for photo_file in photos:
+                byte_data = photo_file.read()
+                photo_file.seek(0)
+                photo_file.write(Engine().encode(byte_data, key))
                 Photo.objects.create(
                     recognition_request=recognition_request,
                     image=photo_file
@@ -213,16 +217,13 @@ def get_recognition_request(request, pk):
         return redirect('recognation_request_list')
 
     if request.method == "POST":
-        print(request.POST)
         form = AnswerForm(request.POST)
-        print("JGSFLK:GJSFLKGJ:SFG:JKLSKLGJKLSJFKL:GJ:SFJKGL:JSFKLGJKL:SJKGL:SKJL:")
         if form.is_valid():
-            print("JGSFLK:GJSFLKGJ:SFG:JKLSKLGJKLSJFKL:GJ:SFJKGL:JSFKLGJKL:SJKGL:SKJL:")
             answer = form.save(commit=False)
             answer.seeker_id = request.user.id
             answer.recognition_request = recognition_request
-            answer.longitude = Engine().encode(bytes(str(answer.longitude).encode("utf-8")), key)
-            answer.latitude = Engine().encode(bytes(str(answer.latitude).encode("utf-8")), key)
+            answer.longitude = Engine().encode(answer.longitude, key)
+            answer.latitude = Engine().encode(answer.latitude, key)
             answer.save()
             return render(
                 request,
@@ -231,6 +232,13 @@ def get_recognition_request(request, pk):
             )
     else:
         form = AnswerForm()
+
+    image_instance = recognition_request.photos.get().image
+    byte_data = image_instance.file.read()
+
+    with image_instance.file.open("wb") as img_file:
+        img_file.write(Engine().decode(byte_data, key))
+
     return render(
         request,
         'location-details.html',
@@ -264,12 +272,16 @@ def recognition_request_details(request, pk):
     user = request.user
     if recognition_request.provider != user:
         return Http404()
-    all_coordinates = recognition_request.answers.all()
-    for i, coord in enumerate(all_coordinates):
-        all_coordinates[i].longitude = Engine().decode(coord.longitude, key)
-        all_coordinates[i].latitude = Engine().decode(coord.latitude, key)
+
+    decrypted_coords = []
+    for coords in recognition_request.answers.all():
+        coords.longitude = struct.unpack(">d", Engine().decode(coords.longitude, key))[0]
+        coords.latitude = struct.unpack(">d", Engine().decode(coords.latitude, key))[0]
+        decrypted_coords.append(coords)
+
     context = {
         'req': recognition_request,
+        'decrypt_coords': decrypted_coords
     }
     return render(request, 'military-request-details.html', context)
 
