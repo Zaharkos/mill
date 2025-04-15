@@ -1,4 +1,9 @@
 """Views for geoguessr project"""
+
+import ultraimport
+import struct
+import base64
+
 from django.contrib import messages
 from django.forms import ValidationError
 from django.http import Http404, HttpResponse
@@ -7,11 +12,6 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.decorators import login_required
 from verify_email.email_handler import ActivationMailManager
 from django.core.paginator import Paginator
-import ultraimport
-import struct
-
-Engine = ultraimport("__dir__/../../encryption/engine.py", "Engine")
-key = b'9991950:364322:4:4:7:2:1' #Engine().generate_random_key()
 
 from .models import MilitaryPromote, Photo, RecognitionRequest, User
 from .forms import (
@@ -24,6 +24,14 @@ from .forms import (
     LoginForm,
 )
 
+Engine = ultraimport("__dir__/../../encryption/engine.py", "Engine")
+
+'''
+For now key is just hardcoded, could be randomly generated if saved somewhere
+and will remain the same for encryption and decryption of some photos
+'''
+
+key = b'9991950:364322:4:4:7:2:1'
 
 def request_list(request):
     """
@@ -34,7 +42,6 @@ def request_list(request):
     posts = RecognitionRequest.published.all()
     return render(request, '<NOTHING>', {'posts': posts})
 
-
 def main_page(request):
     """
     Show the main page.
@@ -44,7 +51,6 @@ def main_page(request):
     if request.user.is_authenticated:
         return redirect('recognation_request_list')
     return render(request, 'main.html')
-
 
 def register_form(request):
     """
@@ -66,7 +72,6 @@ def register_form(request):
         return render(request, "register.html", {"form": form})
     form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
-
 
 def login_form(request):
     """
@@ -93,7 +98,6 @@ def login_form(request):
             error_messages.append('Invalid data')
     form = LoginForm()
     return render(request, 'login.html', {'form': form, 'error_messages': error_messages})
-
 
 @login_required(login_url='login-page')
 def logout_view(request):
@@ -180,7 +184,6 @@ def create_recognition_request(request):
         form = RecognitionRequestForm()
     return render(request, 'create-request.html', {'form': form})
 
-
 @login_required(login_url='login-page')
 def show_recognition_requests(request):
     """
@@ -199,7 +202,6 @@ def show_recognition_requests(request):
         {'recognition_requests': recognition_requests}
     )
 
-
 @login_required(login_url='login-page')
 def get_recognition_request(request, pk):
     """
@@ -216,6 +218,17 @@ def get_recognition_request(request, pk):
     if not recognition_request.is_visible:
         return redirect('recognation_request_list')
 
+    decoded_photos = []
+    for photo in recognition_request.photos.all():
+        image_field = photo.image
+
+        image_field.open(mode='rb')
+        byte_data = image_field.read()
+        image_field.close()
+
+        decoded_data = Engine().decode(byte_data, key)
+        decoded_photos.append(base64.b64encode(decoded_data).decode('utf-8'))
+
     if request.method == "POST":
         form = AnswerForm(request.POST)
         if form.is_valid():
@@ -228,23 +241,24 @@ def get_recognition_request(request, pk):
             return render(
                 request,
                 'location-details.html',
-                {'req': recognition_request, 'form': form}
+                {
+                    'req': recognition_request,
+                    'form': form,
+                    'decoded_photos': decoded_photos
+                }
             )
     else:
         form = AnswerForm()
 
-    image_instance = recognition_request.photos.get().image
-    byte_data = image_instance.file.read()
-
-    with image_instance.file.open("wb") as img_file:
-        img_file.write(Engine().decode(byte_data, key))
-
     return render(
         request,
         'location-details.html',
-        {'req': recognition_request, 'form': form}
+        {
+            'req': recognition_request,
+            'form': form,
+            'decoded_photos': decoded_photos,
+        }
     )
-
 
 @login_required(login_url='login-page')
 def military_request_list(request):
@@ -261,7 +275,6 @@ def military_request_list(request):
         'recognition_requests': recognition_requests,
     }
     return render(request, 'military-requests.html', context)
-
 
 @login_required(login_url='login-page')
 def recognition_request_details(request, pk):
@@ -285,7 +298,6 @@ def recognition_request_details(request, pk):
     }
     return render(request, 'military-request-details.html', context)
 
-
 @login_required(login_url='login-page')
 def recognition_request_close(request, pk):
     try:
@@ -300,7 +312,6 @@ def recognition_request_close(request, pk):
     recognition_request.save()
     return redirect('account')
 
-
 @login_required(login_url='login-page')
 def military_promote(request):
     user = request.user
@@ -311,7 +322,6 @@ def military_promote(request):
         return redirect('profile')
     MilitaryPromote.objects.create(seeker=user)
     return redirect('profile')
-
 
 @login_required(login_url='login-page')
 def admin_panel(request):
@@ -325,7 +335,6 @@ def admin_panel(request):
     promotes = paginator.get_page(page_number)
     return render(request, 'admin.html', {'promotes': promotes})
 
-
 @login_required(login_url='login-page')
 def accept_promote(request, pk):
     user = request.user
@@ -334,7 +343,6 @@ def accept_promote(request, pk):
     promote = MilitaryPromote.objects.get(id=pk)
     promote.promote_user()
     return redirect('admin-panel')
-
 
 @login_required(login_url='login-page')
 def decline_promote(request, pk):

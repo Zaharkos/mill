@@ -19,8 +19,8 @@
     <h1 class="main-title">{{ req.title }}</h1>
     <div class="info-container">
       <div class="photo carousel">
-        {% for imag in req.photos.all %}
-        <img src="{{ imag.image.url }}" class="carousel-image active">
+        {% for photo in decoded_photos %}
+        <img src="data:image;base64,{{ photo }}" class="carousel-image active">
         {% endfor %}
         <button class="carousel-btn prev">‹</button>
         <button class="carousel-btn next">›</button>
