@@ -8,14 +8,11 @@ from django.contrib.auth.decorators import login_required
 from verify_email.email_handler import ActivationMailManager
 from django.core.paginator import Paginator
 import ultraimport
-<<<<<<< HEAD
-=======
 import struct
 
 Engine = ultraimport("__dir__/../../encryption/engine.py", "Engine")
 key = b'9991950:364322:4:4:7:2:1' #Engine().generate_random_key()
 
->>>>>>> af55507d20eda093cdfc2d1c8e2ec7a6d89d43d1
 from .models import MilitaryPromote, Photo, RecognitionRequest, User
 from .forms import (
     AnswerForm,
@@ -225,11 +222,8 @@ def get_recognition_request(request, pk):
             answer = form.save(commit=False)
             answer.seeker_id = request.user.id
             answer.recognition_request = recognition_request
-<<<<<<< HEAD
-=======
             answer.longitude = Engine().encode(answer.longitude, key)
             answer.latitude = Engine().encode(answer.latitude, key)
->>>>>>> af55507d20eda093cdfc2d1c8e2ec7a6d89d43d1
             answer.save()
             return render(
                 request,
