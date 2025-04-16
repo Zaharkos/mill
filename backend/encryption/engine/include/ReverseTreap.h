@@ -47,6 +47,8 @@ private:
 	void getDataFromNodes(Node* node, std::vector<DataBlock>& data);
 
 	Node* m_root = nullptr;
+
+	constexpr static int s_topNodePriority = 10000;
 };
 
 #endif

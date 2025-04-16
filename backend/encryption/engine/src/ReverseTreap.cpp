@@ -9,7 +9,7 @@ ReverseTreap<blockSize>::ReverseTreap(const std::vector<ReverseTreap<blockSize>:
 {
 	for (int i = 0; i < data.size(); i++)
 	{
-		m_root = this->insert(m_root, 0, i, new Node(data[i], rand()));
+		m_root = this->insert(m_root, 0, i, new Node(data[i], rand() % s_topNodePriority));
 	}
 }
 
@@ -174,7 +174,7 @@ typename ReverseTreap<blockSize>::Node* ReverseTreap<blockSize>::erase(Node* nod
 template <size_t blockSize>
 typename ReverseTreap<blockSize>::Node* ReverseTreap<blockSize>::split(int pos)
 {
-	m_root = this->insert(m_root, 0, pos, new Node(DataBlock{}, RAND_MAX + 1));
+	m_root = this->insert(m_root, 0, pos, new Node(DataBlock{}, s_topNodePriority));
 
 	Node* res = m_root->right;
 
@@ -189,7 +189,7 @@ typename ReverseTreap<blockSize>::Node* ReverseTreap<blockSize>::split(int pos)
 template <size_t blockSize>
 void ReverseTreap<blockSize>::merge(Node* node)
 {
-	Node* tempRoot = new Node(DataBlock{}, RAND_MAX + 1);
+	Node* tempRoot = new Node(DataBlock{}, s_topNodePriority);
 	tempRoot->left = m_root;
 	tempRoot->right = node;
 	tempRoot->count = (tempRoot->left ? tempRoot->left->count : 0) + (tempRoot->right ? tempRoot->right->count : 0) + 1;
