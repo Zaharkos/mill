@@ -13,3 +13,24 @@ rapid aggregation of responses and determination of the most probable location;
 secure operation through data encryption;
 
 a convenient dark interface to save energy in field conditions.
+
+User Persona
+
+The primary user is a military servicemember or an OSINT analyst operating in combat zones or during investigations:
+
+They need to quickly and accurately identify locations from photos or videos to make timely decisions.
+
+They are limited in time and resources (such as battery life and internet connectivity) and cannot afford to spend long periods manually analyzing data.
+
+They require a simple, clear, and reliable tool that remains functional even under difficult conditions.
+
+Pain Points We Focused On:
+
+Slow manual location search. Without a centralized tool, determining a shooting location takes a lot of time.
+
+High risk of error. Individuals analyzing images on their own without assistance are prone to making mistakes.
+
+Risk of data leaks. Transferring files without encryption is dangerous during wartime.
+
+Poor adaptation of interfaces for field conditions. Most services are not optimized for saving battery life or working with unstable internet connections.
+
